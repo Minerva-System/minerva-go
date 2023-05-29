@@ -1,0 +1,18 @@
+syntax = "proto3";
+import "messages.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/Minerva-System/minerva-go/pkg/rpc/session";
+
+package Session;
+
+service Session {
+  // Generates session data for a user.
+  rpc Generate(Messages.SessionCreationData) returns (Messages.SessionToken);
+
+  // Retrieves session data from a session token.
+  rpc Retrieve(Messages.SessionToken) returns (Messages.SessionData);
+
+  // Removes a session if existing
+  rpc Remove(Messages.SessionToken) returns (google.protobuf.Empty);
+}
