@@ -1,4 +1,4 @@
-RPC_DIR=internal/minerva_rpc
+RPC_DIR=internal/rpc
 PROTO_DIR=internal/proto
 PROTO=$(wildcard $(PROTO_DIR)/*.proto)
 PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
