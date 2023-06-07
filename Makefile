@@ -9,6 +9,7 @@ all:
 
 protobufs: $(PROTO_GEN) $(PROTO_GRPC_GEN)
 
+# Generation of Protocol Buffer types
 $(RPC_DIR)/%.pb.go: $(PROTO_DIR)/%.proto
 	protoc \
 		-I=${PROTO_DIR} \
@@ -17,6 +18,7 @@ $(RPC_DIR)/%.pb.go: $(PROTO_DIR)/%.proto
 		$< \
 		--experimental_allow_proto3_optional
 
+# Generation of gRPC server and client boilerplate
 $(RPC_DIR)/%_grpc.go: $(PROTO_DIR)/%.proto
 	protoc \
 		-I=${PROTO_DIR} \
