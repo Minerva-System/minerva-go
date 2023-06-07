@@ -1,0 +1,510 @@
+_type: export
+__export_format: 4
+__export_date: 2023-06-07T14:12:30.680Z
+__export_source: insomnia.desktop.app:v2023.2.2
+resources:
+  - _id: greq_2daea0981c0c4b34833aeb09560de8d6
+    parentId: fld_99fa52386a574965b68d3d2050e2d4c1
+    modified: 1686143218268
+    created: 1686141805598
+    url: "{{ _.user_svc }}"
+    name: Get user list
+    description: ""
+    protoFileId: pf_fa2d588b2f7b40bdb561cd90a2face51
+    protoMethodName: /User.User/index
+    metadata: []
+    body:
+      text: |-
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686143212766
+    isPrivate: false
+    _type: grpc_request
+  - _id: fld_99fa52386a574965b68d3d2050e2d4c1
+    parentId: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
+    modified: 1686142987295
+    created: 1686142987295
+    name: USER
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686142987295
+    _type: request_group
+  - _id: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686142977967
+    created: 1686142977967
+    name: Services
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686142977967
+    _type: request_group
+  - _id: wrk_679a79e4a88f4c6cbc03e93488c794df
+    parentId: null
+    modified: 1686143508664
+    created: 1686141803213
+    name: Minerva System (REST + gRPC)
+    description: ""
+    scope: collection
+    _type: workspace
+  - _id: greq_1362c4a8ef0c4defb8dadbc4f89469c4
+    parentId: fld_99fa52386a574965b68d3d2050e2d4c1
+    modified: 1686143259136
+    created: 1686143212816
+    url: "{{ _.user_svc }}"
+    name: Get single user
+    description: ""
+    protoFileId: pf_fa2d588b2f7b40bdb561cd90a2face51
+    protoMethodName: /User.User/show
+    metadata: []
+    body:
+      text: |-
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686143212716
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_07873d9e0b524642bf82780140cabf2c
+    parentId: fld_99fa52386a574965b68d3d2050e2d4c1
+    modified: 1686143393835
+    created: 1686143269639
+    url: "{{ _.user_svc }}"
+    name: Create user
+    description: ""
+    protoFileId: pf_fa2d588b2f7b40bdb561cd90a2face51
+    protoMethodName: /User.User/store
+    metadata: []
+    body:
+      text: |
+        {
+        	"login": "fulano",
+        	"name": "Fulano de Tal",
+        	"email": "fulano@exemplo.com",
+        	"password": "123456"
+        }
+    metaSortKey: -1686143212666
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_01373da5c49d474186ce3bf82f719927
+    parentId: fld_99fa52386a574965b68d3d2050e2d4c1
+    modified: 1686143434433
+    created: 1686143417770
+    url: "{{ _.user_svc }}"
+    name: Update user
+    description: ""
+    protoFileId: pf_fa2d588b2f7b40bdb561cd90a2face51
+    protoMethodName: /User.User/update
+    metadata: []
+    body:
+      text: |
+        {
+        	"id": 1,
+        	"login": "fulano",
+        	"name": "Fulano de Tal",
+        	"email": "fulano@exemplo.com"
+        }
+    metaSortKey: -1686142252896.5
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_e46bf5f62a6440228a39298c7647c275
+    parentId: fld_99fa52386a574965b68d3d2050e2d4c1
+    modified: 1686143481815
+    created: 1686143458903
+    url: "{{ _.user_svc }}"
+    name: Delete user
+    description: ""
+    protoFileId: pf_fa2d588b2f7b40bdb561cd90a2face51
+    protoMethodName: /User.User/delete
+    metadata: []
+    body:
+      text: |
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686142252846.5
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_7e73e40e317d4595a64241c8faafb417
+    parentId: fld_b9a1817849424ca6b442c50094eca922
+    modified: 1686146601444
+    created: 1686145567774
+    url: "{{ _.products_svc }}"
+    name: Get product list
+    description: ""
+    protoFileId: pf_6871e1f467b047ed8195dbb66d94b797
+    protoMethodName: /Product.Products/index
+    metadata: []
+    body:
+      text: |-
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686143212766
+    isPrivate: false
+    _type: grpc_request
+  - _id: fld_b9a1817849424ca6b442c50094eca922
+    parentId: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
+    modified: 1686145567761
+    created: 1686145567761
+    name: PRODUCTS
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686142982631
+    _type: request_group
+  - _id: greq_4a425d10a99346eb90770f72f9efced1
+    parentId: fld_b9a1817849424ca6b442c50094eca922
+    modified: 1686146609180
+    created: 1686145567777
+    url: "{{ _.products_svc }}"
+    name: Get single product
+    description: ""
+    protoFileId: pf_6871e1f467b047ed8195dbb66d94b797
+    protoMethodName: /Product.Products/show
+    metadata: []
+    body:
+      text: |-
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686143212716
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_7e2cd054ba48450fa2ac319753f0c216
+    parentId: fld_b9a1817849424ca6b442c50094eca922
+    modified: 1686147119007
+    created: 1686145567779
+    url: "{{ _.products_svc }}"
+    name: Create product
+    description: ""
+    protoFileId: pf_6871e1f467b047ed8195dbb66d94b797
+    protoMethodName: /Product.Products/store
+    metadata: []
+    body:
+      text: |
+        {
+        	"description": "BONECO ACTION FIGURE HARRY POTTER",
+        	"unit": "UN",
+        	"price": "3.14"
+        }
+    metaSortKey: -1686143212666
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_d619dce8e6fc4499840dd58e759b04c7
+    parentId: fld_b9a1817849424ca6b442c50094eca922
+    modified: 1686146781839
+    created: 1686145567781
+    url: "{{ _.products_svc }}"
+    name: Update product
+    description: ""
+    protoFileId: pf_6871e1f467b047ed8195dbb66d94b797
+    protoMethodName: /Product.Products/update
+    metadata: []
+    body:
+      text: |-
+        {
+        	"id": 1,
+        	"description": "BONECO ACTION FIGURE HARRY POTTER",
+        	"unit": "UN",
+        	"price": "3.14"
+        }
+    metaSortKey: -1686142252896.5
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_5a311006b4b04a549b0cf6a2a314261c
+    parentId: fld_b9a1817849424ca6b442c50094eca922
+    modified: 1686146619777
+    created: 1686145567783
+    url: "{{ _.products_svc }}"
+    name: Delete product
+    description: ""
+    protoFileId: pf_6871e1f467b047ed8195dbb66d94b797
+    protoMethodName: /Product.Products/delete
+    metadata: []
+    body:
+      text: |-
+        {
+        	"index": 1
+        }
+    metaSortKey: -1686142252846.5
+    isPrivate: false
+    _type: grpc_request
+  - _id: env_f0eaa768cabc5b4ab27746323f3e31723c15cd10
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686141803220
+    created: 1686141803220
+    name: Base Environment
+    data: {}
+    dataPropertyOrder: null
+    color: null
+    isPrivate: false
+    metaSortKey: 1686141803220
+    _type: environment
+  - _id: jar_f0eaa768cabc5b4ab27746323f3e31723c15cd10
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686141803222
+    created: 1686141803222
+    name: Default Jar
+    cookies: []
+    _type: cookie_jar
+  - _id: spc_dd994439c5814e9e911e7d86dccb72d1
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686141803214
+    created: 1686141803214
+    fileName: My Collection
+    contents: ""
+    contentType: yaml
+    _type: api_spec
+  - _id: pd_d60b6eb7fee446b08aced1d298a0a459
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686141821306
+    created: 1686141821306
+    name: proto
+    _type: proto_directory
+  - _id: env_aa700942e03a432eb7e990128467e1a5
+    parentId: env_f0eaa768cabc5b4ab27746323f3e31723c15cd10
+    modified: 1686143073873
+    created: 1686143005078
+    name: Local
+    data:
+      base_url: localhost:9000
+      user_svc: localhost:9010
+      session_svc: localhost:9011
+      products_svc: localhost:9012
+    dataPropertyOrder:
+      "&":
+        - base_url
+        - user_svc
+        - session_svc
+        - products_svc
+    color: null
+    isPrivate: false
+    metaSortKey: 1686143005078
+    _type: environment
+  - _id: pf_fd9a1154750f445c940dff44d1926d76
+    parentId: pd_d60b6eb7fee446b08aced1d298a0a459
+    modified: 1686141821293
+    created: 1686141821293
+    name: messages.proto
+    protoText: >
+      syntax = "proto3";
+
+
+      option go_package = "./minerva_rpc";
+
+
+      // This Protocol Buffer describes the messages that can be used on all services.
+
+
+      package Messages;
+
+
+      // A message containing the index of an expected entity.
+
+      message EntityIndex {
+        // Index of entity to be retrieved.
+        int32 index = 1;
+      }
+
+
+      // A message containing the index of a page for a list of entities.
+
+      message PageIndex {
+        // Index of the entity page to be returned. When not informed, should
+        // default to 0.
+        optional int64 index = 1;
+      }
+
+
+      // A message describing a user that can be sent back and forth.
+
+      // This message represents users for inclusion, updating and retrieval.
+
+      message User {
+        // ID of the user. Can be ignored when attempting to create or update an
+        // user. Otherwise must be present (for example, when representing data
+        // retrieved from the database).
+        optional int32 id = 1;
+        // Login that uniquely identifie this user.
+        string login = 2;
+        // Name of this user.
+        string name = 3;
+        // Email for this user. If present, must be unique on the database.
+        optional string email = 4;
+        // Plain-text password for this user. Must be present when creating a new
+        // user; when updating, omitting this field will leave the user's password
+        // on the database as it is. If representing data returned from the database,
+        // will ALWAYS be omitted.
+        optional string password = 5;
+      }
+
+
+      // A message containing a list of users of any size.
+
+      message UserList {
+        // Actual list of users retrieved.
+        repeated User users = 1;
+      }
+
+
+      // A message describing a product that can be sent back and forth.
+
+      // This message represents products for inclusion, updating and retrieval.
+
+      message Product {
+        // ID of the product. Can be ignored when attempting to create or update an
+        // product. Otherwise must be present (for example, when representing data
+        // retrieved from the database).
+        optional int32 id = 1;
+        // Description for the product.
+        string description = 2;
+        // Default unit for the product. Must be a two-character string.
+        // For example, `UN` for units, `KG` for kilograms, etc.
+        string unit = 3;
+        // Unit price for this product, with respect to the product's informed
+        // unit. This field is a string because it expects a fixed-precision
+        // decimal number in string format that can be parsed later.
+        string price = 4;
+      }
+
+
+      // A message containing a list of products.
+
+      message ProductList {
+        // Actual list of products retrieved.
+        repeated Product products = 1;
+      }
+
+
+      // A message containing data to require a session creation on the backend.
+
+      message SessionCreationData {
+        // Tenant where the session data should be created.
+        string tenant = 1;
+        // Login of the user of this tenant that is attempting to create a session.
+        string login = 2;
+        // Plain-text password of the referred user.
+        string password = 3;
+      }
+
+
+      // A message containing session data retrieved from the backend.
+
+      message SessionData {
+        // Tenant where the session data exists.
+        string tenant = 1;
+        // Login of the session's user.
+        string login = 2;
+        // Creation date of the session. Must be informed in Unix Epoch Timestamp
+        // format (non-leap-milliseconds since January 1st, 1970 UTC).
+        int64 creation_date = 3;
+      }
+
+
+      // A message for returning a session token for the user.
+
+      message SessionToken {
+        // Actual session token data, in Base64 format.
+        string token = 1;
+      }
+    _type: proto_file
+  - _id: pf_6871e1f467b047ed8195dbb66d94b797
+    parentId: pd_d60b6eb7fee446b08aced1d298a0a459
+    modified: 1686141821299
+    created: 1686141821299
+    name: products.proto
+    protoText: |+
+      syntax = "proto3";
+      import "messages.proto";
+      import "google/protobuf/empty.proto";
+
+      option go_package = "./minerva_rpc";
+
+      // This Protocol Buffer describes the service for dealing with products.
+
+      package Product;
+
+      service Products {
+        // List all products, given a page index.
+        rpc index(Messages.PageIndex) returns (Messages.ProductList) {}
+
+        // Show a specific product, given its index.
+        rpc show(Messages.EntityIndex) returns (Messages.Product) {}
+
+        // Include a new product and return it.
+        rpc store(Messages.Product) returns (Messages.Product) {}
+
+        // Update a product and return it.
+        rpc update(Messages.Product) returns (Messages.Product) {}
+
+        // Delete a product.
+        rpc delete(Messages.EntityIndex) returns (google.protobuf.Empty) {}
+      }
+
+    _type: proto_file
+  - _id: pf_955fe1406a964fb58c15a204fb905e00
+    parentId: pd_d60b6eb7fee446b08aced1d298a0a459
+    modified: 1686141821302
+    created: 1686141821302
+    name: session.proto
+    protoText: >
+      syntax = "proto3";
+
+      import "messages.proto";
+
+      import "google/protobuf/empty.proto";
+
+
+      option go_package = "./minerva_rpc";
+
+
+      package Session;
+
+
+      service Session {
+        // Generates session data for a user.
+        rpc Generate(Messages.SessionCreationData) returns (Messages.SessionToken);
+
+        // Retrieves session data from a session token.
+        rpc Retrieve(Messages.SessionToken) returns (Messages.SessionData);
+
+        // Removes a session if existing
+        rpc Remove(Messages.SessionToken) returns (google.protobuf.Empty);
+      }
+    _type: proto_file
+  - _id: pf_fa2d588b2f7b40bdb561cd90a2face51
+    parentId: pd_d60b6eb7fee446b08aced1d298a0a459
+    modified: 1686141821304
+    created: 1686141821304
+    name: user.proto
+    protoText: |
+      syntax = "proto3";
+      import "messages.proto";
+      import "google/protobuf/empty.proto";
+
+      option go_package = "./minerva_rpc";
+
+      // This Protocol Buffer describes the service for dealing with users.
+
+      package User;
+
+      service User {
+        // List all users, given a page index.
+        rpc index(Messages.PageIndex) returns (Messages.UserList) {}
+
+        // Show a specific user, given its index.
+        rpc show(Messages.EntityIndex) returns (Messages.User) {}
+
+        // Include a new user and return it.
+        rpc store(Messages.User) returns (Messages.User) {}
+
+        // Update a user and return it.
+        rpc update(Messages.User) returns (Messages.User) {}
+
+        // Delete a user.
+        rpc delete(Messages.EntityIndex) returns (google.protobuf.Empty) {}
+      }
+    _type: proto_file

@@ -5,11 +5,12 @@ import (
 	"net"
 
 	context "context"
+
 	grpc "google.golang.org/grpc"
-	status "google.golang.org/grpc/status"
 	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	
+
 	rpc "minervarpc"
 )
 
@@ -19,27 +20,31 @@ type UserServerImpl struct {
 
 func (UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.UserList, error) {
 	log.Print("Index method called")
-	log.Printf("Index passed: %s", idx)
+	log.Printf("Payload: %s", idx)
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
 
 func (UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.User, error) {
 	log.Print("Show method called")
+	log.Printf("Payload: %s", idx)
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 
 func (UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Print("Store method called")
+	log.Printf("Payload: %s", user)
 	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
 }
 
 func (UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Print("Update method called")
+	log.Printf("Payload: %s", user)
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 
 func (UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
 	log.Print("Delete method called")
+	log.Printf("Payload: %s", idx)
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 

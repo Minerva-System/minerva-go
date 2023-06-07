@@ -4,3 +4,4 @@ bin/
 deploy/
 *.md
 **/.git
+extra/
