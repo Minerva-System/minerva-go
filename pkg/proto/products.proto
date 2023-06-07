@@ -2,7 +2,7 @@ syntax = "proto3";
 import "messages.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/Minerva-System/minerva-go/pkg/rpc/products";
+option go_package = "./minerva_rpc";
 
 // This Protocol Buffer describes the service for dealing with products.
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/Minerva-System/minerva-go/pkg/rpc/messages";
+option go_package = "./minerva_rpc";
 
 // This Protocol Buffer describes the messages that can be used on all services.
 

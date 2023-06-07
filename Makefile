@@ -12,5 +12,6 @@ $(RPC_DIR)/%.pb.go: $(PROTO_DIR)/%.proto
 	protoc \
 		-I=${PROTO_DIR} \
 		--go_out=$(RPC_DIR) \
+		--go_opt=paths=source_relative \
 		$< \
 		--experimental_allow_proto3_optional
