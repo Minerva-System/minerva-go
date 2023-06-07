@@ -1,5 +1,5 @@
-RPC_DIR=pkg/rpc
-PROTO_DIR=pkg/proto
+RPC_DIR=internal/minerva_rpc
+PROTO_DIR=internal/proto
 PROTO=$(wildcard $(PROTO_DIR)/*.proto)
 PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
 
