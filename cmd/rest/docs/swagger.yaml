@@ -1,0 +1,8 @@
+basePath: /
+info:
+  contact: {}
+  description: Minerva System API
+  title: Minerva System API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
