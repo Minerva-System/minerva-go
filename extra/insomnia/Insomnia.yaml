@@ -1,8 +1,123 @@
 _type: export
 __export_format: 4
-__export_date: 2023-06-07T14:12:30.680Z
-__export_source: insomnia.desktop.app:v2023.2.2
+__export_date: 2023-06-08T13:42:50.906Z
+__export_source: insomnia.desktop.app:v2023.1.0
 resources:
+  - _id: req_ee19df0743ae4f8b8949bec214d6e7ec
+    parentId: fld_0b56be31ad984b1c80b6e51fe4d913bd
+    modified: 1686231448742
+    created: 1686231419900
+    url: "{{ _.base_url }}/"
+    name: Root
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers: []
+    authentication: {}
+    metaSortKey: -1686231419900
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: fld_0b56be31ad984b1c80b6e51fe4d913bd
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686231413417
+    created: 1686231413417
+    name: Gateway
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686231413417
+    _type: request_group
+  - _id: wrk_679a79e4a88f4c6cbc03e93488c794df
+    parentId: null
+    modified: 1686143508664
+    created: 1686141803213
+    name: Minerva System (REST + gRPC)
+    description: ""
+    scope: collection
+    _type: workspace
+  - _id: greq_88523f67abfd43f3a0a398cc47966357
+    parentId: fld_c7bc174c1898424fba0a35111f594f65
+    modified: 1686231709050
+    created: 1686231460460
+    url: "{{ _.session_svc }}"
+    name: Create session
+    description: ""
+    protoFileId: pf_955fe1406a964fb58c15a204fb905e00
+    protoMethodName: /Session.Session/Generate
+    metadata: []
+    body:
+      text: |-
+        {
+        	"tenant": "minerva",
+        	"login": "admin",
+        	"password": "admin"
+        }
+    metaSortKey: -1686231460460
+    isPrivate: false
+    _type: grpc_request
+  - _id: fld_c7bc174c1898424fba0a35111f594f65
+    parentId: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
+    modified: 1686231400761
+    created: 1686231400761
+    name: SESSION
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686231400761
+    _type: request_group
+  - _id: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
+    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
+    modified: 1686142977967
+    created: 1686142977967
+    name: Services
+    description: ""
+    environment: {}
+    environmentPropertyOrder: null
+    metaSortKey: -1686142977967
+    _type: request_group
+  - _id: greq_a9c4797ccb0f4d33a4cd64398e47f186
+    parentId: fld_c7bc174c1898424fba0a35111f594f65
+    modified: 1686231713670
+    created: 1686231622942
+    url: "{{ _.session_svc }}"
+    name: Retrieve session
+    description: ""
+    protoFileId: pf_955fe1406a964fb58c15a204fb905e00
+    protoMethodName: /Session.Session/Retrieve
+    metadata: []
+    body:
+      text: |-
+        {
+        	"token": "bla"
+        }
+    metaSortKey: -1686231460410
+    isPrivate: false
+    _type: grpc_request
+  - _id: greq_67275ccbde4d494987d3609951955800
+    parentId: fld_c7bc174c1898424fba0a35111f594f65
+    modified: 1686231717210
+    created: 1686231666812
+    url: "{{ _.session_svc }}"
+    name: Delete session
+    description: ""
+    protoFileId: pf_955fe1406a964fb58c15a204fb905e00
+    protoMethodName: /Session.Session/Remove
+    metadata: []
+    body:
+      text: |-
+        {
+        	"token": "bla"
+        }
+    metaSortKey: -1686231460360
+    isPrivate: false
+    _type: grpc_request
   - _id: greq_2daea0981c0c4b34833aeb09560de8d6
     parentId: fld_99fa52386a574965b68d3d2050e2d4c1
     modified: 1686143218268
@@ -31,24 +146,6 @@ resources:
     environmentPropertyOrder: null
     metaSortKey: -1686142987295
     _type: request_group
-  - _id: fld_ffe3e02fcb2f420c8afc1c4a6f98c0d3
-    parentId: wrk_679a79e4a88f4c6cbc03e93488c794df
-    modified: 1686142977967
-    created: 1686142977967
-    name: Services
-    description: ""
-    environment: {}
-    environmentPropertyOrder: null
-    metaSortKey: -1686142977967
-    _type: request_group
-  - _id: wrk_679a79e4a88f4c6cbc03e93488c794df
-    parentId: null
-    modified: 1686143508664
-    created: 1686141803213
-    name: Minerva System (REST + gRPC)
-    description: ""
-    scope: collection
-    _type: workspace
   - _id: greq_1362c4a8ef0c4defb8dadbc4f89469c4
     parentId: fld_99fa52386a574965b68d3d2050e2d4c1
     modified: 1686143259136
@@ -266,7 +363,7 @@ resources:
     _type: proto_directory
   - _id: env_aa700942e03a432eb7e990128467e1a5
     parentId: env_f0eaa768cabc5b4ab27746323f3e31723c15cd10
-    modified: 1686143073873
+    modified: 1686179649830
     created: 1686143005078
     name: Local
     data:
@@ -283,6 +380,26 @@ resources:
     color: null
     isPrivate: false
     metaSortKey: 1686143005078
+    _type: environment
+  - _id: env_06995a02e2a64a1b9cda3799d80209ad
+    parentId: env_f0eaa768cabc5b4ab27746323f3e31723c15cd10
+    modified: 1686179676638
+    created: 1686179652323
+    name: Plan 9
+    data:
+      base_url: rpi3.local:9000
+      user_svc: rpi3.local:9010
+      session_svc: rpi3.local:9011
+      products_svc: rpi3.local:9012
+    dataPropertyOrder:
+      "&":
+        - base_url
+        - user_svc
+        - session_svc
+        - products_svc
+    color: null
+    isPrivate: false
+    metaSortKey: 1686179652323
     _type: environment
   - _id: pf_fd9a1154750f445c940dff44d1926d76
     parentId: pd_d60b6eb7fee446b08aced1d298a0a459
