@@ -1,19 +1,54 @@
 # minerva-go
 
-## Generating protocol buffer implementations
+Golang refactor of the [Minerva System](https://minerva-system.github.io/minerva-system/).
 
-Install `protoc`.
+## Building
+
+Use the `Makefile` to build. You will need a Golang compiler with minimum
+version 1.20.4.
 
 ```bash
-go install github.com/swaggo/swag/cmd/swag@latest
+make            # To build everything
+make protobufs  # To regenerate Protocol Buffers implementations
+make clean      # To remove generated services
+make purge      # To remove generated files such as Swagger/OpenAPI
+                #    and protobufs
+make docker     # To build Docker images (see next sections)
+```
+
+If you wish to rebuild the protocol buffer files, you'll also need `protoc`
+and a few more dependencies. Furthermore, to regenerate Swagger and OpenAPI
+documentation for the REST service, you'll need Swag.
+
+### Generating protocol buffer implementations
+
+First of all, install `protoc`, the protobuf compiler. Seek out the best
+package for your Linux distribution or, on Windows, use a package manager
+such as Chocolatey.
+
+After that, use the Go package manager to install dependencies:
+
+```bash
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 ```
 
-Run `swag init` on `cmd/rest`.
+Finally, use `make protobufs` for an automated generation of files.
 
+### Generating Swagger and OpenAPI documentation
 
-## Building images
+First install the `swag` tool:
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+Finally, `cd` to `cmd/rest`, then run `swag init`.
+
+### Building Docker images
+
+If you wish to build a single Docker image, use a command like the
+following:
 
 ```
 docker image build \
@@ -30,7 +65,7 @@ Possible names for `MODULENAME`:
 - `minerva_go_session` (gRPC, runs on port 9011);
 - `minerva_go_products` (gRPC, runs on port 9012).
 
-### Cross-platform build
+#### Cross-platform build
 
 If you're using BuildKit, you can also generate cross-platform images
 (and push them to DockerHub) by abusing the `--platform` argument.
