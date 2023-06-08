@@ -1,6 +1,6 @@
 # Default directories
 RPC_DIR=internal/rpc
-PROTO_DIR=internal/proto
+PROTO_DIR=proto
 MODULES_DIR=cmd
 BIN_DIR=bin
 BIN9_DIR=9bin
