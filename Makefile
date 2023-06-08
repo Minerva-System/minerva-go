@@ -3,9 +3,11 @@ RPC_DIR=internal/rpc
 PROTO_DIR=internal/proto
 MODULES_DIR=cmd
 BIN_DIR=bin
+BIN9_DIR=9bin
 
 # Wildcards for generating modules
 MODULES=$(patsubst $(MODULES_DIR)/%,$(BIN_DIR)/%,$(wildcard $(MODULES_DIR)/*))
+MODULES9=$(patsubst $(MODULES_DIR)/%,$(BIN9_DIR)/%,$(wildcard $(MODULES_DIR)/*))
 PROTO=$(wildcard $(PROTO_DIR)/*.proto)
 PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
 PROTO_GRPC_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%_grpc.pb.go,$(filter-out $(PROTO_DIR)/messages.proto,$(PROTO)))
@@ -36,10 +38,19 @@ purge:
 	rm -f $(PROTO_GEN) $(PROTO_GRPC_GEN)
 
 
+# (Experimental) Generate Plan 9 ARM binaries
+plan9: export GOARCH := arm
+plan9: export GOOS   := plan9
+plan9: BIN_DIR       := 9bin
+plan9: $(MODULES9)
+
 # ===================
 
 # Generation of Minerva modules
 $(BIN_DIR)/%: $(MODULES_DIR)/%/main.go
+	go build -o $@ $<
+
+$(BIN9_DIR)/%: $(MODULES_DIR)/%/main.go
 	go build -o $@ $<
 
 # ===================

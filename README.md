@@ -83,3 +83,17 @@ docker buildx build \
 	.
 ```
 
+### Building for Plan 9
+
+There is an experimental build method which will build the modules for Plan 9
+under an ARM architecture. This is due to my current setup where Plan 9 is
+run in a Raspberry Pi 3 Model B+ with a 32-bit ARM kernel.
+
+If you wish to build Plan 9 binaries, use the following:
+
+```bash
+make plan9
+```
+
+Binaries will be created in `9bin`. You may also want to take a look at the
+script in `extra/runsvc.rc` for ease of use in Plan 9.
