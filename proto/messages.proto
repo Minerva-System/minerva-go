@@ -9,7 +9,7 @@ package Messages;
 // A message containing the index of an expected entity.
 message EntityIndex {
   // Index of entity to be retrieved.
-  int32 index = 1;
+  string index = 1;
 }
 
 // A message containing the index of a page for a list of entities.
@@ -25,7 +25,7 @@ message User {
   // ID of the user. Can be ignored when attempting to create or update an
   // user. Otherwise must be present (for example, when representing data
   // retrieved from the database).
-  optional int32 id = 1;
+  optional string id = 1;
   // Login that uniquely identifie this user.
   string login = 2;
   // Name of this user.
@@ -51,7 +51,7 @@ message Product {
   // ID of the product. Can be ignored when attempting to create or update an
   // product. Otherwise must be present (for example, when representing data
   // retrieved from the database).
-  optional int32 id = 1;
+  optional string id = 1;
   // Description for the product.
   string description = 2;
   // Default unit for the product. Must be a two-character string.

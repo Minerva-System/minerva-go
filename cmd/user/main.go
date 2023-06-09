@@ -69,15 +69,30 @@ func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc
 		log.Fatalf("Unable to create user: %v", result.Error)
 	}
 
-	log.Printf("User created with ID %d (rows affected: %d)", u.ID, result.RowsAffected)
+	log.Printf("User created with ID %s (rows affected: %d)", u.ID, result.RowsAffected)
 	
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 
-func (UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
+func (self UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Print("Store method called")
-	log.Printf("Payload: %s", user)
-	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
+
+	log.Print("Serializing message to model...")
+	db_user, err := model.UserFromMessage(user)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Error while converting message to model: %v", err)
+	}
+
+	log.Print("Saving to database...")
+	result := self.db.Create(&db_user)
+	if result.Error != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to create user: %v", result.Error)
+	}
+
+	log.Printf("User created. ID: %s", db_user.ID)
+	
+	new_user := db_user.ToMessage()
+	return &new_user, nil
 }
 
 func (UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
@@ -107,8 +122,13 @@ func createServer() *UserServerImpl {
 	// }
 
 	dsn := fmt.Sprintf(
-		"minerva:mysql@tcp(%s)/minerva?charset=utf8&parseTime=True&loc=Local",
-		dbsrv)
+		"%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		"minerva", // user
+		"mysql", // password
+		dbsrv,
+		"minerva", // database
+	)
+	
 
 	// Connect to database
 	log.Printf("Connecting to database...")
