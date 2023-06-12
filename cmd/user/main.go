@@ -35,12 +35,6 @@ type UserServerImpl struct {
 func (self UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.UserList, error) {
 	log.Print("Index method called")
 	log.Printf("Payload: %s", idx)
-
-	// Test
-	log.Print("Migrating user table...")
-	if err := self.db.AutoMigrate(&model.User{}); err != nil {
-		log.Fatalf("Error while migrating database: %v", err)
-	}
 	
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
@@ -152,6 +146,11 @@ func createServer() *UserServerImpl {
 	}
 
 	log.Print("Connected to database!")
+
+	log.Print("Migrating user table...")
+	if err := db.AutoMigrate(&model.User{}); err != nil {
+		log.Fatalf("Error while migrating database: %v", err)
+	}
 
 	s := &UserServerImpl{}
 	s.db = db
