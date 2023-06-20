@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+
+	"github.com/joho/godotenv"
 	
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -16,7 +18,11 @@ import (
 // @query.collection.format multi
 
 func main() {
-	log.Print("Hello world!")
+	log.Print("Minerva System: REST gateway service (Go port)")
+	log.Print("Copyright (c) 2022-2023 Lucas S. Vieira")
+
+	godotenv.Load()
+	
 	host := "0.0.0.0:9000"
 
 	router := gin.Default()

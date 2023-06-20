@@ -4,6 +4,8 @@ import (
 	"log"
 	"net"
 
+	"github.com/joho/godotenv"
+
 	context "context"
 	grpc "google.golang.org/grpc"
 	status "google.golang.org/grpc/status"
@@ -43,7 +45,11 @@ func createServer() *ProductsServerImpl {
 }
 
 func main() {
-	log.Print("Hello world!")
+	log.Print("Minerva System: PRODUCTS service (Go port)")
+	log.Print("Copyright (c) 2022-2023 Lucas S. Vieira")
+
+	godotenv.Load()
+	
 	listener, err := net.Listen("tcp", "0.0.0.0:9012")
 	if err != nil {
 		log.Fatalf("Failed to start gRPC server: %v", err)
