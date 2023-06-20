@@ -14,6 +14,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	rabbitmq "github.com/wagslane/go-rabbitmq"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,6 +30,7 @@ import (
 type UserServerImpl struct {
 	rpc.UnimplementedUserServer
 	db *gorm.DB
+	rmq *rabbitmq.Conn
 	// Pools for database and rabbitmq
 	// connections map[string](DB, RABBITMQ)
 }
@@ -104,30 +107,37 @@ func (UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptyp
 func createServer() *UserServerImpl {
 	log.Print("Initializing server...")
 	var dbsrv string
-	// var amqpsrv string
+	var amqpsrv string
 	var exists bool
 	
 	if dbsrv, exists = os.LookupEnv("DATABASE_SERVICE_SERVER"); !exists {
 		log.Fatal("Unable to read DATABASE_SERVICE_SERVER")
 	}
 	
-	// if amqpsrv, exists = os.LookupEnv("RABBITMQ_SERVICE_SERVER"); !exists {
-	// 	log.Fatal("Unable to read RABBITMQ_SERVICE_SERVER")
-	// }
+	if amqpsrv, exists = os.LookupEnv("RABBITMQ_SERVICE_SERVER"); !exists {
+		log.Fatal("Unable to read RABBITMQ_SERVICE_SERVER")
+	}
 
-	dsn := fmt.Sprintf(
+	dbdsn := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		"minerva", // user
 		"mysql", // password
 		dbsrv,
 		"minerva", // database
 	)
-	
+
+	rmqdsn := fmt.Sprintf(
+		"amqp://%s:%s@%s/%s",
+		"rabbitmq", // user
+		"rabbitmq", // pass
+		amqpsrv, // host, port normally 5672
+		"%2f", // vhost, if empty use %2f
+	)
 
 	// Connect to database
 	log.Printf("Connecting to database...")
 	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN: dsn,
+		DSN: dbdsn,
 		DefaultStringSize: 256,
 		DontSupportRenameIndex: true,
 		DontSupportRenameColumn: true,
@@ -152,8 +162,22 @@ func createServer() *UserServerImpl {
 		log.Fatalf("Error while migrating database: %v", err)
 	}
 
+	// Connect to rabbitmq
+	log.Printf("Connecting to RabbitMQ...")
+	rmq, err := rabbitmq.NewConn(
+		rmqdsn,
+		rabbitmq.WithConnectionOptionsLogging,
+	)
+
+	if err != nil {
+		log.Fatalf("Unable to connect to RabbitMQ: %v", err)
+	}
+
+	log.Print("Connected to RabbitMQ!")
+
 	s := &UserServerImpl{}
 	s.db = db
+	s.rmq = rmq
 	
 	return s
 }
@@ -161,7 +185,6 @@ func createServer() *UserServerImpl {
 func main() {
 	log.Print("Minerva System: USER service (Go port)")
 	log.Print("Copyright (c) 2022-2023 Lucas S. Vieira")
-	log.Print()
 
 	godotenv.Load()
 
