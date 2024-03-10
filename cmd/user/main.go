@@ -1,20 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net"
-	"os"
 
 	context "context"
 
 	"github.com/joho/godotenv"
-
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-
-	rabbitmq "github.com/wagslane/go-rabbitmq"
 
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -23,35 +14,36 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	model "minervamodel"
-	rpc "minervarpc"
+	
+	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
+	connection "github.com/Minerva-System/minerva-go/internal/connection"
+	model "github.com/Minerva-System/minerva-go/internal/model"
+	log "github.com/Minerva-System/minerva-go/pkg/log"
 )
 
 type UserServerImpl struct {
 	rpc.UnimplementedUserServer
-	db *gorm.DB
-	rmq *rabbitmq.Conn
-	// Pools for database and rabbitmq
-	// connections map[string](DB, RABBITMQ)
+	conn connection.Collection
 }
 
 func (self UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.UserList, error) {
-	log.Print("Index method called")
-	log.Printf("Payload: %s", idx)
+	log.Info("Index method called")
+	log.Info("Payload: %s", idx)
 	
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
 
 func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.User, error) {
-	log.Print("Show method called")
-	log.Printf("Payload: %s", idx)
+	log.Info("Show method called")
+	log.Info("Payload: %s", idx)
 
 	// Test
-	log.Print("Creating user...")
+	log.Info("Creating user...")
 
 	hash, err := bcrypt.GenerateFromPassword([]byte("123456"), 8)
 	if err != nil {
-		log.Fatalf("Unable to generate password hash: %v", err)
+		log.Error("Unable to generate password hash: %v", err)
+		return nil, err
 	}
 
 	u := model.User{
@@ -61,139 +53,96 @@ func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc
 		Pwhash: hash,
 	}
 
-	result := self.db.Create(&u)
+	result := self.conn.DB.Create(&u)
 	if result.Error != nil {
-		log.Fatalf("Unable to create user: %v", result.Error)
+		log.Error("Unable to create user: %v", result.Error)
+		return nil, status.Errorf(codes.Aborted, "Unable to create user: %v", result.Error)
 	}
 
-	log.Printf("User created with ID %s (rows affected: %d)", u.ID, result.RowsAffected)
+	log.Info("User created with ID %d (rows affected: %d)", u.ID, result.RowsAffected)
 	
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 
 func (self UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
-	log.Print("Store method called")
+	log.Info("Store method called")
 
-	log.Print("Serializing message to model...")
+	log.Info("Serializing message to model...")
 	db_user, err := model.UserFromMessage(user)
 	if err != nil {
+		log.Error("Error while converting message to model: %v", err)
 		return nil, status.Errorf(codes.InvalidArgument, "Error while converting message to model: %v", err)
 	}
 
-	log.Print("Saving to database...")
-	result := self.db.Create(&db_user)
+	log.Info("Saving to database...")
+	result := self.conn.DB.Create(&db_user)
 	if result.Error != nil {
+		log.Error("Unable to create user: %v", result.Error)
 		return nil, status.Errorf(codes.Internal, "Unable to create user: %v", result.Error)
 	}
 
-	log.Printf("User created. ID: %s", db_user.ID)
+	log.Info("User created. ID: %s", db_user.ID)
 	
 	new_user := db_user.ToMessage()
 	return &new_user, nil
 }
 
 func (UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
-	log.Print("Update method called")
-	log.Printf("Payload: %s", user)
+	log.Info("Update method called")
+	log.Info("Payload: %s", user)
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 
 func (UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
-	log.Print("Delete method called")
-	log.Printf("Payload: %s", idx)
+	log.Info("Delete method called")
+	log.Info("Payload: %s", idx)
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 
 func createServer() *UserServerImpl {
-	log.Print("Initializing server...")
-	var dbsrv string
-	var amqpsrv string
-	var exists bool
-	
-	if dbsrv, exists = os.LookupEnv("DATABASE_SERVICE_SERVER"); !exists {
-		log.Fatal("Unable to read DATABASE_SERVICE_SERVER")
-	}
-	
-	if amqpsrv, exists = os.LookupEnv("RABBITMQ_SERVICE_SERVER"); !exists {
-		log.Fatal("Unable to read RABBITMQ_SERVICE_SERVER")
-	}
+	log.Info("Initializing server...")
 
-	dbdsn := fmt.Sprintf(
-		"%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		"minerva", // user
-		"mysql", // password
-		dbsrv,
-		"minerva", // database
-	)
-
-	rmqdsn := fmt.Sprintf(
-		"amqp://%s:%s@%s/%s",
-		"rabbitmq", // user
-		"rabbitmq", // pass
-		amqpsrv, // host, port normally 5672
-		"%2f", // vhost, if empty use %2f
-	)
-
-	// Connect to database
-	log.Printf("Connecting to database...")
-	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN: dbdsn,
-		DefaultStringSize: 256,
-		DontSupportRenameIndex: true,
-		DontSupportRenameColumn: true,
-		SkipInitializeWithVersion: false,
-	}), &gorm.Config{
-		Logger: logger.New(
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
-			logger.Config{
-				Colorful: false,
-			},
-		),
-	})
+	log.Info("Establishing connections...")
+	col, err := connection.NewCollection(
+		connection.CollectionOptions{
+			WithDatabase: true,
+			WithMessageBroker: true,
+		})
 
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v", err)
+		log.Fatal("Failed to establish connections: %v", err)
 	}
 
-	log.Print("Connected to database!")
-
-	log.Print("Migrating user table...")
-	if err := db.AutoMigrate(&model.User{}); err != nil {
-		log.Fatalf("Error while migrating database: %v", err)
+	log.Info("Migrating user table...")
+	if err := col.DB.AutoMigrate(&model.User{}); err != nil {
+		log.Fatal("Error while migrating database: %v", err)
 	}
 
-	// Connect to rabbitmq
-	log.Printf("Connecting to RabbitMQ...")
-	rmq, err := rabbitmq.NewConn(
-		rmqdsn,
-		rabbitmq.WithConnectionOptionsLogging,
-	)
-
-	if err != nil {
-		log.Fatalf("Unable to connect to RabbitMQ: %v", err)
+	s := &UserServerImpl{
+		conn: col,
 	}
 
-	log.Print("Connected to RabbitMQ!")
-
-	s := &UserServerImpl{}
-	s.db = db
-	s.rmq = rmq
-	
+	log.Info("Server preparations complete.")
 	return s
 }
 
 func main() {
-	log.Print("Minerva System: USER service (Go port)")
-	log.Print("Copyright (c) 2022-2023 Lucas S. Vieira")
+	log.Init()
+	
+	log.Info("Minerva System: USER service (Go port)")
+	log.Info("Copyright (c) 2022-2024 Lucas S. Vieira")
 
 	godotenv.Load()
 
 	server := createServer()
-	
-	listener, err := net.Listen("tcp", "0.0.0.0:9010")
+
+	log.Info("Allocating TCP port...")
+	listener, err := net.Listen("tcp", ":9010")
 	if err != nil {
-		log.Fatalf("Failed to start gRPC server: %v", err)
+		log.Fatal("Failed to start gRPC server: %v", err)
 	}
+
+	log.Info("Initializing gRPC server.")
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	rpc.RegisterUserServer(grpcServer, server)

@@ -82,3 +82,13 @@ minerva_go_%:
 		--target $@ \
 		-t luksamuk/$@ \
 		.
+
+
+# ============
+
+# Execution of modules for debug purpose4s
+
+run-%:
+	go run cmd/$(subst run-,,$@)/main.go
+
+

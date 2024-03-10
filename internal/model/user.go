@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	rpc "minervarpc"
+	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 )
 
 type User struct {
