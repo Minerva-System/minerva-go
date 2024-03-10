@@ -1,10 +1,10 @@
 package minerva_connection
 
 import (
-	"log/slog"
-	
 	"gorm.io/gorm"
 	rabbitmq "github.com/wagslane/go-rabbitmq"
+
+	log "github.com/Minerva-System/minerva-go/pkg/log"
 )
 
 type CollectionOptions struct {
@@ -21,28 +21,28 @@ func NewCollection(options CollectionOptions) (Collection, error) {
 	var err error
 	col := Collection{}
 
-	slog.Info("Initializing connection collection...")
+	log.Info("Initializing connection collection...")
 
 	if(options.WithDatabase) {
-		slog.Info("Connecting to database...")
+		log.Info("Connecting to database...")
 		col.DB, err = databaseConnect()
 
 		if err != nil {
-			slog.Error("Error while connecting to database: %v", err)
+			log.Error("Error while connecting to database: %v", err)
 			return Collection{}, err
 		}
 	}
 
 	if(options.WithMessageBroker) {
-		slog.Info("Connecting to message broker...")
+		log.Info("Connecting to message broker...")
 		col.Broker, err = brokerConnect()
 
 		if err != nil {
-			slog.Error("Error while connecting to message broker: %v", err)
+			log.Error("Error while connecting to message broker: %v", err)
 			return Collection{}, err
 		}
 	}
 
-	slog.Info("Requested connections established.")
+	log.Info("Requested connections established.")
 	return col, nil
 }

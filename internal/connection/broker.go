@@ -4,7 +4,9 @@ import (
 	"os"
 	"fmt"
 	"errors"
+
 	rabbitmq "github.com/wagslane/go-rabbitmq"
+	
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 )
 

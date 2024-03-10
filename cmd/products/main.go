@@ -56,6 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to start gRPC server: %v", err)
 	}
+	
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	rpc.RegisterProductsServer(grpcServer, createServer())
