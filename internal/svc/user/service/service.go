@@ -1,9 +1,8 @@
-package user
+package service
 
 import (
 	"context"
 
-	"golang.org/x/crypto/bcrypt"
 	grpc "google.golang.org/grpc"
 	status "google.golang.org/grpc/status"
 	codes "google.golang.org/grpc/codes"
@@ -12,7 +11,9 @@ import (
 	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 	connection "github.com/Minerva-System/minerva-go/internal/connection"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
+
 	model "github.com/Minerva-System/minerva-go/internal/model"
+	controller "github.com/Minerva-System/minerva-go/internal/svc/user/controller"
 )
 
 type UserServerImpl struct {
@@ -22,75 +23,52 @@ type UserServerImpl struct {
 
 func (self UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.UserList, error) {
 	log.Info("Index method called")
-	log.Info("Payload: %s", idx)
+
+	if (idx == nil) || (idx.Index == nil) {
+		log.Error("Index method failed: Missing page index parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing page index parameter")
+	}
 	
-	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
+	return controller.UserIndex(self.conn.DB, *idx.Index)
 }
 
 func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.User, error) {
 	log.Info("Show method called")
-	log.Info("Payload: %s", idx)
 
-	// Test
-	log.Info("Creating user...")
-
-	hash, err := bcrypt.GenerateFromPassword([]byte("123456"), 8)
-	if err != nil {
-		log.Error("Unable to generate password hash: %v", err)
-		return nil, err
+	if idx == nil {
+		log.Error("Show method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
 	}
 
-	u := model.User{
-		Login: "fulano",
-		Name: "Fulano de Tal",
-		Email: nil,
-		Pwhash: hash,
-	}
-
-	result := self.conn.DB.Create(&u)
-	if result.Error != nil {
-		log.Error("Unable to create user: %v", result.Error)
-		return nil, status.Errorf(codes.Aborted, "Unable to create user: %v", result.Error)
-	}
-
-	log.Info("User created with ID %d (rows affected: %d)", u.ID, result.RowsAffected)
-	
-	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
+	return controller.GetUser(self.conn.DB, idx.Index)
 }
 
 func (self UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Info("Store method called")
 
-	log.Info("Serializing message to model...")
-	db_user, err := model.UserFromMessage(user)
-	if err != nil {
-		log.Error("Error while converting message to model: %v", err)
-		return nil, status.Errorf(codes.InvalidArgument, "Error while converting message to model: %v", err)
+	if user == nil {
+		log.Error("Store method failed: missing new user data")
+		return nil, status.Error(codes.InvalidArgument, "Missing new user data")
 	}
-
-	log.Info("Saving to database...")
-	result := self.conn.DB.Create(&db_user)
-	if result.Error != nil {
-		log.Error("Unable to create user: %v", result.Error)
-		return nil, status.Errorf(codes.Internal, "Unable to create user: %v", result.Error)
-	}
-
-	log.Info("User created. ID: %s", db_user.ID)
 	
-	new_user := db_user.ToMessage()
-	return &new_user, nil
+	return controller.CreateUser(self.conn.DB, user)
 }
 
 func (UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Info("Update method called")
 	log.Info("Payload: %s", user)
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
 }
 
-func (UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
+func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
 	log.Info("Delete method called")
-	log.Info("Payload: %s", idx)
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+
+	if idx == nil {
+		log.Error("Delete method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+	
+	return &emptypb.Empty{}, controller.DeleteUser(self.conn.DB, idx.Index)
 }
 
 

@@ -5,7 +5,7 @@ import (
 	"github.com/joho/godotenv"
 
 	log "github.com/Minerva-System/minerva-go/pkg/log"
-	svc "github.com/Minerva-System/minerva-go/internal/svc/user"
+	svc "github.com/Minerva-System/minerva-go/internal/svc/user/service"
 )
 
 func main() {
