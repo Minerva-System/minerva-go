@@ -7,7 +7,21 @@ import (
 )
 
 func Init() {
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+	level := slog.LevelInfo
+	
+	switch os.Getenv("MINERVA_LOG_LEVEL") {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn":
+		level = slog.LevelWarn
+	}
+
+	opts := &slog.HandlerOptions{
+		Level: level,
+	}
+
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, opts)))
+	Info("Log level set to %s", level)
 }
 
 

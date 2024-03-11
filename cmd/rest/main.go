@@ -20,13 +20,12 @@ import (
 // @query.collection.format multi
 
 func main() {
+	godotenv.Load()
 	log.Init()
 	gin.SetMode(gin.ReleaseMode)
 	
 	log.Info("Minerva System: REST gateway service (Go port)")
 	log.Info("Copyright (c) 2022-2023 Lucas S. Vieira")
-
-	godotenv.Load()
 	
 	host := ":9000"
 

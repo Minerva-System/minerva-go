@@ -9,12 +9,11 @@ import (
 )
 
 func main() {
+	godotenv.Load()
 	log.Init()
 	
 	log.Info("Minerva System: USER service (Go port)")
 	log.Info("Copyright (c) 2022-2024 Lucas S. Vieira")
-
-	godotenv.Load()
 
 	server := svc.CreateServer()
 
