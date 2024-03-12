@@ -46,14 +46,29 @@ func ExistsUser(db *gorm.DB, id uuid.UUID) (bool, error) {
 }
 
 func UpdateUser(db *gorm.DB, data model.User) (model.User, error) {
-	if result := db.Model(&data).
-		Updates(model.User{
-			ID: data.ID,
-			Name: data.Name,
-			Pwhash: data.Pwhash,
-		}); result.Error != nil {
-		return model.User{}, result.Error
+	err := db.Transaction(func(tx *gorm.DB) error {
+		// Update actual entity
+		result := db.Model(&data).
+			Updates(model.User{
+				ID: data.ID,
+				Name: data.Name,
+				Pwhash: data.Pwhash,
+				Email: data.Email,
+			})
+		if result.Error != nil {
+			return result.Error
+		}
+
+		if data.Email == nil {
+			log.Debug("E-mail is null, removing it")
+			result = db.Model(&data).Updates(map[string]interface{}{"email": nil})
+		}
+		return result.Error
+	})
+	
+	if err != nil {
+		return model.User{}, err
 	}
-	// return GetUser(db, data.ID) // TODO: Is this really necessary?
-	return data, nil
+	
+	return GetUser(db, data.ID)
 }

@@ -34,9 +34,10 @@ func MapMessageToModel(m *rpc.User) (model.User, error) {
 	id := uuid.UUID{}
 	pwhash := make([]byte, 0)
 	var err error
-	
+
 	if m.Id != nil {
-		id, err = uuid.FromBytes([]byte(*m.Id))
+		log.Debug("Parsing UUID: %s", *m.Id)
+		id, err = uuid.Parse(*m.Id)
 		if err != nil {
 			log.Error("Unable to parse UUID from gRPC message to User model: %v", err)
 			return model.User{}, err
@@ -50,7 +51,7 @@ func MapMessageToModel(m *rpc.User) (model.User, error) {
 			return model.User{}, err
 		}
 	}
-	
+
 	return model.User{
 		ID: id,
 		Login: m.Login,
