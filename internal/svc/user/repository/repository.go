@@ -35,3 +35,25 @@ func CreateUser(db *gorm.DB, data model.User) (model.User, error) {
 func DeleteUser(db *gorm.DB, id uuid.UUID) error {
 	return db.Delete(&model.User{}, "id = ?", id).Error
 }
+
+func ExistsUser(db *gorm.DB, id uuid.UUID) (bool, error) {
+	var exists bool = false
+	result := db.Model(&model.User{}).
+		Select("COUNT(*) > 0").
+		Where("ID = ?", id).
+		Find(&exists)
+	return exists, result.Error
+}
+
+func UpdateUser(db *gorm.DB, data model.User) (model.User, error) {
+	if result := db.Model(&data).
+		Updates(model.User{
+			ID: data.ID,
+			Name: data.Name,
+			Pwhash: data.Pwhash,
+		}); result.Error != nil {
+		return model.User{}, result.Error
+	}
+	// return GetUser(db, data.ID) // TODO: Is this really necessary?
+	return data, nil
+}

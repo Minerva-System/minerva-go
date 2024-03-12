@@ -54,10 +54,15 @@ func (self UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User
 	return controller.CreateUser(self.conn.DB, user)
 }
 
-func (UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
+func (self UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.User, error) {
 	log.Info("Update method called")
-	log.Info("Payload: %s", user)
-	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
+
+	if user == nil {
+		log.Error("Update method failed: missing user data")
+		return nil, status.Error(codes.InvalidArgument, "Missing user data")
+	}
+
+	return controller.UpdateUser(self.conn.DB, user)
 }
 
 func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {

@@ -95,8 +95,15 @@ func DeleteUser(db *gorm.DB, id string) error {
 		return status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
 	}
 
-	if _, err := GetUser(db, id); err != nil {
-		return err
+	exists, err := repository.ExistsUser(db, parsedId)
+	if err != nil {
+		log.Error("Error accessing database: %v", err)
+		return status.Errorf(codes.Internal, "Error accessing database: %v", err)
+	}
+
+	if !exists {
+		log.Error("User %s not found", id)
+		return status.Error(codes.NotFound, "User not found")
 	}
 	
 	err = repository.DeleteUser(db, parsedId)
@@ -105,4 +112,31 @@ func DeleteUser(db *gorm.DB, id string) error {
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)
 	}
 	return nil
+}
+
+func UpdateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
+	if data.Id == nil {
+		log.Error("User id is missing")
+		return nil, status.Error(codes.InvalidArgument, "User id is missing")
+	}
+
+	if data.Login != "" {
+		log.Error("User login cannot be changed")
+		return nil, status.Error(codes.InvalidArgument, "User login cannot be changed")
+	}
+	
+	d, err := MapMessageToModel(data)
+	if err != nil {
+		log.Error("Error mapping user data: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "Error mapping user data: %v", err)
+	}
+
+	result, err := repository.UpdateUser(db, d)
+	if err != nil {
+		log.Error("Error accessing database: %v", err)
+		return nil, status.Errorf(codes.Internal, "Error accessing database: %v", err)
+	}
+
+	msg := MapModelToMessage(result)
+	return &msg, nil
 }
