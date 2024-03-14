@@ -54,13 +54,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/main.ErrorMessage"
+                            "$ref": "#/definitions/model.ErrorMessage"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/main.ErrorMessage"
+                            "$ref": "#/definitions/model.ErrorMessage"
                         }
                     }
                 }
@@ -68,7 +68,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "main.ErrorMessage": {
+        "model.ErrorMessage": {
             "type": "object",
             "properties": {
                 "message": {
@@ -115,7 +115,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Minerva System API",
-	Description:      "Minerva System API",
+	Description:      "Minerva System API (v1)",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

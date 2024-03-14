@@ -1,16 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Minerva System API (v1)",
-        "title": "Minerva System API",
-        "contact": {
-            "name": "Lucas S. Vieira",
-            "url": "https://luksamuk.codes",
-            "email": "lucasvieira@protonmail.com"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "basePath": "/api/v1",
     "paths": {
         "/user": {
             "get": {

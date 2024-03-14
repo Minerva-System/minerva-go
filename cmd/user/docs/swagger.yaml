@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   model.ErrorMessage:
     properties:
@@ -25,13 +24,7 @@ definitions:
         type: string
     type: object
 info:
-  contact:
-    email: lucasvieira@protonmail.com
-    name: Lucas S. Vieira
-    url: https://luksamuk.codes
-  description: Minerva System API (v1)
-  title: Minerva System API
-  version: "1.0"
+  contact: {}
 paths:
   /user:
     get:
