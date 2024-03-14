@@ -3,6 +3,8 @@ package minerva_api_v1
 import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/Minerva-System/minerva-go/cmd/rest/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Minerva System API
@@ -17,5 +19,10 @@ import (
 // TODO: license.name, license.url
 
 func InstallRoutes(router *gin.Engine, server *Server) {
-	router.GET("/api/v1/user", server.GetUsers)
+	api := router.Group("/api/v1")
+	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	
+	api.GET("/users", server.GetUsers)
+	api.GET("/users/:id", server.GetUser)
+	api.POST("/users", server.CreateUser)
 }

@@ -24,6 +24,17 @@ definitions:
       updatedAt:
         type: string
     type: object
+  schema.NewUser:
+    properties:
+      email:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
 info:
   contact:
     email: lucasvieira@protonmail.com
@@ -33,7 +44,7 @@ info:
   title: Minerva System API
   version: "1.0"
 paths:
-  /user:
+  /users:
     get:
       consumes:
       - application/json
@@ -61,6 +72,68 @@ paths:
           schema:
             $ref: '#/definitions/model.ErrorMessage'
       summary: User list
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: new user data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.NewUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+      summary: Create user
+      tags:
+      - User
+  /users/:id:
+    get:
+      consumes:
+      - application/json
+      description: Get data of a specific user
+      parameters:
+      - description: user UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+      summary: Get user
       tags:
       - User
 swagger: "2.0"

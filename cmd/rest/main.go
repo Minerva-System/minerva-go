@@ -8,16 +8,12 @@ import (
 	sloggin "github.com/samber/slog-gin"
 	"github.com/gin-contrib/cors"
 
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-
-	_ "github.com/Minerva-System/minerva-go/cmd/rest/docs"
 	connection "github.com/Minerva-System/minerva-go/internal/connection"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 	api_v1 "github.com/Minerva-System/minerva-go/internal/api/v1"
 )
 
-//go:generate swag init -d ../../internal/api/v1,../../internal/model -g routes.go
+//go:generate swag init -d ../../internal/api/v1,../../internal/model,../../internal/schema -g routes.go
 
 func main() {
 	godotenv.Load()
@@ -29,7 +25,6 @@ func main() {
 
 	log.Info("Establishing connections...")
 
-	// Test
 	col, err := connection.NewCollection(connection.CollectionOptions{
 		WithUserService: true,
 		WithSessionService: true,
@@ -49,9 +44,6 @@ func main() {
 	router.Use(sloggin.New(slog.Default()))
 	router.Use(gin.Recovery())
 	router.Use(cors.Default())
-	
-	// docs.SwaggerInfo.BasePath = "/"
-	router.GET("/api/v1/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	api_v1.InstallRoutes(router, &server)
 	

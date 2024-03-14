@@ -36,7 +36,11 @@ func newGrpcClientPool(clientKind string) (*grpcpool.Pool, error) {
 			log.Error("Unable to connect to %s (%s): %v", clientKind, host, err)
 			return nil, err
 		}
-		log.Info("Connection to %s (%s) established", clientKind, host)
+		log.Info(
+			"Connection pool to %s (%s) was created. Connections will be created on demand.",
+			clientKind,
+			host,
+		)
 		return conn, err
 	}
 
