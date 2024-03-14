@@ -48,9 +48,11 @@ plan9: $(MODULES9)
 
 # Generation of Minerva modules
 $(BIN_DIR)/%: $(MODULES_DIR)/%/main.go
+	go generate $<
 	go build -o $@ $<
 
 $(BIN9_DIR)/%: $(MODULES_DIR)/%/main.go
+	go generate $<
 	go build -o $@ $<
 
 # ===================
