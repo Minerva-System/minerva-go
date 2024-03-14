@@ -1,8 +1,66 @@
-basePath: /
+basePath: /api/v1
+definitions:
+  main.ErrorMessage:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  model.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
 info:
-  contact: {}
+  contact:
+    email: lucasvieira@protonmail.com
+    name: Lucas S. Vieira
+    url: https://luksamuk.codes
   description: Minerva System API
   title: Minerva System API
   version: "1.0"
-paths: {}
+paths:
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of users per page
+      parameters:
+      - description: page number (0 or more)
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorMessage'
+      summary: User list
+      tags:
+      - User
 swagger: "2.0"

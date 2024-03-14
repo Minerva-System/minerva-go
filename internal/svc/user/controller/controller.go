@@ -12,6 +12,7 @@ import (
 	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 	repository "github.com/Minerva-System/minerva-go/internal/svc/user/repository"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
+	model "github.com/Minerva-System/minerva-go/internal/model"
 )
 
 const PAGESIZE = 100
@@ -29,7 +30,7 @@ func UserIndex(db *gorm.DB, page int64) (*rpc.UserList, error) {
 		return nil, status.Errorf(codes.Internal, "Error acessing database: %v", err)
 	}
 
-	return MapModelListToMessage(list), nil
+	return model.User{}.ListToMessage(list), nil
 }
 
 func GetUser(db *gorm.DB, id string) (*rpc.User, error) {
@@ -50,7 +51,7 @@ func GetUser(db *gorm.DB, id string) (*rpc.User, error) {
 		return nil, status.Errorf(codes.Internal, "Error accessing database: %v", err)
 	}
 
-	msg := MapModelToMessage(usr)
+	msg := usr.ToMessage()
 	return &msg, nil
 }
 
@@ -65,7 +66,7 @@ func CreateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
 		return nil, status.Error(codes.InvalidArgument, "Password for new user cannot be empty")
 	}
 	
-	m, err := MapMessageToModel(data)
+	m, err := model.User{}.FromMessage(data)
 	if err != nil {
 		log.Error("Error mapping user data: %v", err)
 		return nil, status.Errorf(codes.InvalidArgument, "Error mapping user data: %v", err)
@@ -84,7 +85,7 @@ func CreateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
 		}
 	}()
 
-	msg := MapModelToMessage(created)
+	msg := created.ToMessage()
 	return &msg, nil
 }
 
@@ -125,7 +126,7 @@ func UpdateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
 		return nil, status.Error(codes.InvalidArgument, "User login cannot be changed")
 	}
 	
-	d, err := MapMessageToModel(data)
+	d, err := model.User{}.FromMessage(data)
 	if err != nil {
 		log.Error("Error mapping user data: %v", err)
 		return nil, status.Errorf(codes.InvalidArgument, "Error mapping user data: %v", err)
@@ -137,6 +138,6 @@ func UpdateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
 		return nil, status.Errorf(codes.Internal, "Error accessing database: %v", err)
 	}
 
-	msg := MapModelToMessage(result)
+	msg := result.ToMessage()
 	return &msg, nil
 }
