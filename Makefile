@@ -90,6 +90,6 @@ minerva_go_%:
 
 run-%:
 	go generate cmd/$(subst run-,,$@)/main.go
-	gow run cmd/$(subst run-,,$@)/main.go
+	go run cmd/$(subst run-,,$@)/main.go
 
 

@@ -21,8 +21,9 @@ If you wish to rebuild the protocol buffer files, you'll also need `protoc`
 and a few more dependencies. Furthermore, to regenerate Swagger and OpenAPI
 documentation for the REST service, you'll need Swag.
 
-To use `make run-<cmd>` commands, you need to install `gow`, as it will
-refresh the Go application on execution while it is changed:
+To use `make run-<cmd>` commands, you need to replace `<cmd>` with the desired
+service name, which must always be one of the directory names within the `cmd`
+directory, e.g. to run the REST server, use `make run-rest`.
 
 ```bash
 go install github.com/mitranim/gow@latest
