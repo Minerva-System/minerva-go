@@ -1,6 +1,6 @@
 # NOTE: Actual path should be project root!
-FROM golang:1.20.4-alpine3.16 AS builder
-RUN mkdir /minerva
+FROM golang:1.22-alpine AS builder
+RUN mkdir -p /minerva
 WORKDIR /minerva
 ENV CGO_ENABLED=0
 RUN apk add --no-cache make protobuf protobuf-dev ca-certificates && \
