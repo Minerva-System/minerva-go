@@ -14,11 +14,19 @@ make clean      # To remove generated services
 make purge      # To remove generated files such as Swagger/OpenAPI
                 #    and protobufs
 make docker     # To build Docker images (see next sections)
+make run-<cmd>  # To run a specific service (see the cmd directory)
 ```
 
 If you wish to rebuild the protocol buffer files, you'll also need `protoc`
 and a few more dependencies. Furthermore, to regenerate Swagger and OpenAPI
 documentation for the REST service, you'll need Swag.
+
+To use `make run-<cmd>` commands, you need to install `gow`, as it will
+refresh the Go application on execution while it is changed:
+
+```bash
+go install github.com/mitranim/gow@latest
+```
 
 ### Generating protocol buffer implementations
 

@@ -89,6 +89,7 @@ minerva_go_%:
 # Execution of modules for debug purpose4s
 
 run-%:
-	go run cmd/$(subst run-,,$@)/main.go
+	go generate cmd/$(subst run-,,$@)/main.go
+	gow run cmd/$(subst run-,,$@)/main.go
 
 
