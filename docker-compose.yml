@@ -21,6 +21,11 @@ services:
         condition: service_started
       products:
         condition: service_started
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: rest
 
   user:
     build:
@@ -43,6 +48,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: user
 
   session:
     build:
@@ -65,6 +75,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: session
 
   products:
     build:
@@ -87,6 +102,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: products
 
   mariadb:
     image: mariadb:11.3
@@ -105,7 +125,7 @@ services:
       - database:/var/lib/mysql
     healthcheck:
       interval: 30s
-      retries: 3
+      retries: 20
       test:
         [
           "CMD",
@@ -130,8 +150,48 @@ services:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
       timeout: 30s
-      retries: 3
+      retries: 20
 
+  fluentd:
+    build: ./deploy/compose-config/fluentd
+    volumes:
+      - ./deploy/compose-config/fluentd/config:/fluentd/etc
+    links:
+      - elasticsearch
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xmx2g -Xms2g
+    expose:
+      - 9200
+    ports:
+      - 9200:9200
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 20
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.1.2
+    links:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      
 volumes:
   database:
   broker:
