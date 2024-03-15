@@ -103,7 +103,7 @@ paths:
       summary: Create user
       tags:
       - User
-  /users/:id:
+  /users/{id}:
     get:
       consumes:
       - application/json

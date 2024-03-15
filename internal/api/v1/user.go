@@ -79,7 +79,7 @@ func (self *Server) GetUsers(ctx *gin.Context) {
 // @Failure   400     {object}    model.ErrorMessage
 // @Failure   404     {object}    model.ErrorMessage
 // @Failure   500     {object}    model.ErrorMessage
-// @Router    /users/:id [get]
+// @Router    /users/{id} [get]
 func (self *Server) GetUser(ctx *gin.Context) {
 	id := ctx.Param("id")
 

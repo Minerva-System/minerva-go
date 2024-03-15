@@ -110,7 +110,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/:id": {
+        "/users/{id}": {
             "get": {
                 "description": "Get data of a specific user",
                 "consumes": [
