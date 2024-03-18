@@ -143,8 +143,8 @@ services:
       - 15672:15672
       - 15692:15692
     volumes:
-      - ./deploy/compose-config/rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-      - ./deploy/compose-config/rabbitmq_10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
+      - ./deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
       - broker:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
