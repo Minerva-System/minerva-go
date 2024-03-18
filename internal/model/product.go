@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+	
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 
@@ -14,20 +16,23 @@ type Product struct {
 	Description string          `json:"description" gorm:"not null"`
 	Unit        string          `json:"unit" gorm:"type:char(2);not null"`
 	Price       decimal.Decimal `json:"price" gorm:"type:decimal(19,4);not null"`
+	CreatedAt   time.Time       `json:"createdAt" gorm:"not null,autoCreateTime"`
+	UpdatedAt   time.Time       `json:"updatedAt" gorm:"not null,autoUpdateTime"`
+	DeletedAt   *time.Time      `gorm:"index" json:"deletedAt,omitempty"`
 }
 
 func (p *Product) ToMessage() rpc.Product {
 	id := p.ID.String()
 
 	return rpc.Product{
-		Id: &id,
+		Id:          &id,
 		Description: p.Description,
-		Unit: util.StringToUnit(p.Unit),
-		Price: p.Price.String(),
+		Unit:        util.StringToUnit(p.Unit),
+		Price:       p.Price.String(),
 	}
 }
 
-func (Product) ListToMessage (l []Product) *rpc.ProductList {
+func (Product) ListToMessage(l []Product) *rpc.ProductList {
 	var result rpc.ProductList
 	for _, p := range l {
 		msg := p.ToMessage()
@@ -57,10 +62,10 @@ func (Product) FromMessage(p *rpc.Product) (Product, error) {
 	}
 
 	return Product{
-		ID: id,
+		ID:          id,
 		Description: p.Description,
-		Unit: util.StringToUnit(p.Unit),
-		Price: price,
+		Unit:        util.StringToUnit(p.Unit),
+		Price:       price,
 	}, nil
 }
 
