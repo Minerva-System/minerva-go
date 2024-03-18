@@ -2,7 +2,7 @@
 
 # This script spawns some Minerva System services.
 
-window -scroll `{pwd}^/products
-window -scroll `{pwd}^/rest
-window -scroll `{pwd}^/session
-window -scroll `{pwd}^/user
+window -scroll -cd `{pwd} ./products
+window -scroll -cd `{pwd} ./rest
+window -scroll -cd `{pwd} ./session
+window -scroll -cd `{pwd} ./user

@@ -1,27 +1,51 @@
 package main
 
 import (
-	"log"
-	
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	docs "minervarestdocs"
+	"github.com/joho/godotenv"
+	sloggin "github.com/samber/slog-gin"
+	"github.com/gin-contrib/cors"
+
+	connection "github.com/Minerva-System/minerva-go/internal/connection"
+	log "github.com/Minerva-System/minerva-go/pkg/log"
+	api_v1 "github.com/Minerva-System/minerva-go/internal/api/v1"
 )
 
-// @title Minerva System API
-// @version 1.0
-// @description Minerva System API
-// @BasePath /
-// @query.collection.format multi
+//go:generate swag init -d ../../internal/api/v1,../../internal/model,../../internal/schema -g routes.go
 
 func main() {
-	log.Print("Hello world!")
-	host := "0.0.0.0:9000"
+	godotenv.Load()
+	log.Init()
+	gin.SetMode(gin.ReleaseMode)
+	
+	log.Info("Minerva System: REST gateway service (Go port)")
+	log.Info("Copyright (c) 2022-2024 Lucas S. Vieira")
 
-	router := gin.Default()
-	docs.SwaggerInfo.BasePath = "/"
+	log.Info("Establishing connections...")
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	col, err := connection.NewCollection(connection.CollectionOptions{
+		WithUserService: true,
+		WithSessionService: true,
+		WithProductsService: true,
+	})
+	if err != nil {
+		log.Fatal("Failed to establish connections: %v", err)
+	}
+
+	server := api_v1.Server{
+		Collection: col,
+	}
+	
+	host := ":9000"
+
+	router := gin.New()
+	router.Use(sloggin.New(slog.Default()))
+	router.Use(gin.Recovery())
+	router.Use(cors.Default())
+
+	api_v1.InstallRoutes(router, &server)
+	
 	router.Run(host)
 }

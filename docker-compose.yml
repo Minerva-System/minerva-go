@@ -1,0 +1,197 @@
+version: "3"
+
+services:
+  rest:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: minerva_go_rest
+    environment:
+      - GIN_MODE=release
+      - MINERVA_LOG_LEVEL=debug
+      - MINERVA_USER_HOST=user:9010
+      - MINERVA_SESSION_HOST=session:9011
+      - MINERVA_PRODUCTS_HOST=products:9012
+    ports:
+      - 9000:9000
+    depends_on:
+      user:
+        condition: service_started
+      session:
+        condition: service_started
+      products:
+        condition: service_started
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: rest
+
+  user:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: minerva_go_user
+    environment:
+      - MINERVA_LOG_LEVEL=debug
+      - DATABASE_SERVICE_SERVER=mariadb:3306
+      - DATABASE_SERVICE_USER=mysql
+      - DATABASE_SERVICE_PASSWORD=mysql
+      - DATABASE_SERVICE_DBNAME=minerva
+      - BROKER_SERVICE_SERVER=rabbitmq:5672
+      - BROKER_SERVICE_USER=rabbitmq
+      - BROKER_SERVICE_PASSWORD=rabbitmq
+    ports:
+      - 9010:9010
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: user
+
+  session:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: minerva_go_session
+    environment:
+      - MINERVA_LOG_LEVEL=debug
+      - DATABASE_SERVICE_SERVER=mariadb:3306
+      - DATABASE_SERVICE_USER=mysql
+      - DATABASE_SERVICE_PASSWORD=mysql
+      - DATABASE_SERVICE_DBNAME=minerva
+      - BROKER_SERVICE_SERVER=rabbitmq:5672
+      - BROKER_SERVICE_USER=rabbitmq
+      - BROKER_SERVICE_PASSWORD=rabbitmq
+    ports:
+      - 9011:9011
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: session
+
+  products:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: minerva_go_products
+    environment:
+      - MINERVA_LOG_LEVEL=debug
+      - DATABASE_SERVICE_SERVER=mariadb:3306
+      - DATABASE_SERVICE_USER=mysql
+      - DATABASE_SERVICE_PASSWORD=mysql
+      - DATABASE_SERVICE_DBNAME=minerva
+      - BROKER_SERVICE_SERVER=rabbitmq:5672
+      - BROKER_SERVICE_USER=rabbitmq
+      - BROKER_SERVICE_PASSWORD=rabbitmq
+    ports:
+      - 9012:9012
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: products
+
+  mariadb:
+    image: mariadb:11.3
+    environment:
+      - MARIADB_ROOT_PASSWORD=mysql
+      - MARIADB_DATABASE=minerva
+      - MARIADB_USER=mysql
+      - MARIADB_PASSWORD=mysql
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_DATABASE=minerva
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      interval: 30s
+      retries: 20
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su-mysql",
+          "--connect",
+          "--innodb_initialized"
+        ]
+      timeout: 30s
+    
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15692:15692
+    volumes:
+      - ./deploy/compose-config/rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./deploy/compose-config/rabbitmq_10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
+      - broker:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 20
+
+  fluentd:
+    build: ./deploy/compose-config/fluentd
+    volumes:
+      - ./deploy/compose-config/fluentd/config:/fluentd/etc
+    links:
+      - elasticsearch
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xmx2g -Xms2g
+    expose:
+      - 9200
+    ports:
+      - 9200:9200
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 20
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.1.2
+    links:
+      - elasticsearch
+    ports:
+      - 5601:5601
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      
+volumes:
+  database:
+  broker:

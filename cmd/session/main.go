@@ -1,16 +1,18 @@
 package main
 
 import (
-	"log"
 	"net"
+
+	"github.com/joho/godotenv"
 
 	context "context"
 	grpc "google.golang.org/grpc"
 	status "google.golang.org/grpc/status"
 	codes "google.golang.org/grpc/codes"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	
-	rpc "minervarpc"
+
+	log "github.com/Minerva-System/minerva-go/pkg/log"
+	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 )
 
 type SessionServerImpl struct {
@@ -35,10 +37,15 @@ func createServer() *SessionServerImpl {
 }
 
 func main() {
-	log.Print("Hello world!")
-	listener, err := net.Listen("tcp", "0.0.0.0:9011")
+	godotenv.Load()
+	log.Init()
+	
+	log.Info("Minerva System: SESSION service (Go port)")
+	log.Info("Copyright (c) 2022-2023 Lucas S. Vieira")
+	
+	listener, err := net.Listen("tcp", ":9011")
 	if err != nil {
-		log.Fatalf("Failed to start gRPC server: %v", err)
+		log.Fatal("Failed to start gRPC server: %v", err)
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)

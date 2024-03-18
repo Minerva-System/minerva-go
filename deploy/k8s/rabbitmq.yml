@@ -1,0 +1,81 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-plugin-configmap
+data:
+  enabled_plugins: |
+    [rabbitmq_management, rabbitmq_prometheus].
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-configmap
+data:
+  10-defaults.conf: |
+    log.console.level = info
+    channel_max = 1700
+    default_user = rabbitmq
+    default_pass = rabbitmq
+    default_user_tags.administrator = true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  type: ClusterIP
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      port: 5672
+    - name: management
+      port: 15672
+    - name: vhost
+      port: 15692
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  template:
+    metadata:
+      name: rabbitmq
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq-container
+          image: rabbitmq:3.13-management-alpine
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq
+              name: rabbitmq-pv
+            - mountPath: /etc/rabbitmq/
+              name: rabbitmq-plugin-config
+            - mountPath: /etc/rabbitmq/conf.d
+              name: rabbitmq-config
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+            - containerPort: 15692
+              name: vhost
+      volumes:
+        - name: rabbitmq-pv
+          persistentVolumeClaim:
+            claimName: rabbitmq-pvc
+        - name: rabbitmq-plugin-config
+          configMap:
+            name: rabbitmq-plugin-configmap
+        - name: rabbitmq-config
+          configMap:
+            name: rabbitmq-configmap
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+---

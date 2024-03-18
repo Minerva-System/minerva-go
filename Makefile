@@ -48,9 +48,11 @@ plan9: $(MODULES9)
 
 # Generation of Minerva modules
 $(BIN_DIR)/%: $(MODULES_DIR)/%/main.go
+	go generate $<
 	go build -o $@ $<
 
 $(BIN9_DIR)/%: $(MODULES_DIR)/%/main.go
+	go generate $<
 	go build -o $@ $<
 
 # ===================
@@ -82,3 +84,21 @@ minerva_go_%:
 		--target $@ \
 		-t luksamuk/$@ \
 		.
+
+
+# ============
+
+# Execution of modules for debug purpose4s
+
+run-%:
+	go generate cmd/$(subst run-,,$@)/main.go
+	go run cmd/$(subst run-,,$@)/main.go | jq
+
+
+# ============
+
+# Execution of Docker Compose
+
+minerva-up:
+	docker compose up
+
