@@ -14,8 +14,7 @@ func main() {
 	godotenv.Load()
 	log.Init()
 	
-	log.Info("Minerva System: USER service (Go port)")
-	log.Info("Copyright (c) 2022-2024 Lucas S. Vieira")
+	log.Info("Minerva System: USER service (Go port), Copyright (c) 2022-2024 Lucas S. Vieira")
 
 	server := svc.CreateServer()
 	var port string = ":9010"

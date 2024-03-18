@@ -48,8 +48,7 @@ func main() {
 	godotenv.Load()
 	log.Init()
 	
-	log.Info("Minerva System: PRODUCTS service (Go port)")
-	log.Info("Copyright (c) 2022-2023 Lucas S. Vieira")
+	log.Info("Minerva System: PRODUCTS service (Go port), Copyright (c) 2022-2024 Lucas S. Vieira")
 	
 	listener, err := net.Listen("tcp", ":9012")
 	if err != nil {
