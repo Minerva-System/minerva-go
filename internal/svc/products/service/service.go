@@ -13,7 +13,7 @@ import (
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 
 	model "github.com/Minerva-System/minerva-go/internal/model"
-	// controller "github.com/Minerva-System/minerva-go/internal/svc/products/controller"
+	controller "github.com/Minerva-System/minerva-go/internal/svc/products/controller"
 )
 
 type ProductsServerImpl struct {
@@ -21,29 +21,54 @@ type ProductsServerImpl struct {
 	conn connection.Collection
 }
 
-func (ProductsServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.ProductList, error) {
+func (self ProductsServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.ProductList, error) {
 	log.Info("Index method called")
-	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
+
+	if (idx == nil) || (idx.Index == nil) {
+		log.Error("Index method failed: Missing page index parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing page index parameter")
+	}
+
+	return controller.ProductsIndex(self.conn.DB, *idx.Index)
 }
 
-func (ProductsServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.Product, error) {
+func (self ProductsServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.Product, error) {
 	log.Info("Show method called")
-	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
+
+	if idx == nil {
+		log.Error("Show method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+
+	return controller.GetProduct(self.conn.DB, idx.Index)
 }
 
-func (ProductsServerImpl) Store(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
+func (self ProductsServerImpl) Store(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
 	log.Info("Store method called")
-	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
+
+	if product == nil {
+		log.Error("Store method failed: missing new product data")
+		return nil, status.Error(codes.InvalidArgument, "Missing new product data")
+	}
+
+	return controller.CreateProduct(self.conn.DB, product)
 }
 
 func (ProductsServerImpl) Update(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
 	log.Info("Update method called")
+	// TODO
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 
-func (ProductsServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
+func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
 	log.Info("Delete method called")
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+
+	if idx == nil {
+		log.Error("Delete method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+
+	return &emptypb.Empty{}, controller.DeleteProduct(self.conn.DB, idx.Index)
 }
 
 func ApplyMigrations(col *connection.Collection) {

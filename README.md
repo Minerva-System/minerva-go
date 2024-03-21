@@ -25,9 +25,9 @@ To use `make run-<cmd>` commands, you need to replace `<cmd>` with the desired
 service name, which must always be one of the directory names within the `cmd`
 directory, e.g. to run the REST server, use `make run-rest`.
 
-```bash
-go install github.com/mitranim/gow@latest
-```
+<!-- ```bash -->
+<!-- go install github.com/mitranim/gow@latest -->
+<!-- ``` -->
 
 ### Generating protocol buffer implementations
 

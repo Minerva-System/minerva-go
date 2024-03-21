@@ -21,6 +21,8 @@ services:
         condition: service_started
       products:
         condition: service_started
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -48,6 +50,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -75,6 +79,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -102,6 +108,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -125,7 +133,7 @@ services:
       - database:/var/lib/mysql
     healthcheck:
       interval: 30s
-      retries: 20
+      retries: 50
       test:
         [
           "CMD",
@@ -150,7 +158,7 @@ services:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
       timeout: 30s
-      retries: 20
+      retries: 50
 
   fluentd:
     build: ./deploy/compose-config/fluentd
@@ -174,7 +182,7 @@ services:
       # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
       # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
       # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-      - ES_JAVA_OPTS=-Xmx2g -Xms2g
+      - ES_JAVA_OPTS=-Xmx1g -Xms1g
     expose:
       - 9200
     ports:
@@ -183,7 +191,7 @@ services:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 30s
-      retries: 20
+      retries: 50
 
   kibana:
     image: kibana:8.12.2
