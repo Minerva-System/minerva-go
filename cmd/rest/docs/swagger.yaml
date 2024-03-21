@@ -49,17 +49,29 @@ definitions:
         type: number
       unit:
         type: string
+    required:
+    - description
+    - price
+    - unit
     type: object
   schema.NewUser:
     properties:
       email:
         type: string
       login:
+        maxLength: 25
+        minLength: 5
         type: string
       name:
+        maxLength: 100
         type: string
       password:
+        minLength: 8
         type: string
+    required:
+    - login
+    - name
+    - password
     type: object
 info:
   contact:

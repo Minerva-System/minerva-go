@@ -371,6 +371,11 @@ const docTemplate = `{
         },
         "schema.NewProduct": {
             "type": "object",
+            "required": [
+                "description",
+                "price",
+                "unit"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
@@ -385,18 +390,27 @@ const docTemplate = `{
         },
         "schema.NewUser": {
             "type": "object",
+            "required": [
+                "login",
+                "name",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 25,
+                    "minLength": 5
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 8
                 }
             }
         }
