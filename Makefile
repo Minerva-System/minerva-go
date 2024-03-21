@@ -15,6 +15,9 @@ PROTO_GRPC_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%_grpc.pb.go,$(filter-
 # Docker image names
 DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products
 
+# Golang build flags
+export CGO_ENABLED := 0
+
 .PHONY: all clean purge docker
 
 all: protobufs modules

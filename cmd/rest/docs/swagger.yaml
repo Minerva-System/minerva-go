@@ -7,6 +7,23 @@ definitions:
       status:
         type: integer
     type: object
+  model.Product:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      unit:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   model.User:
     properties:
       createdAt:
@@ -22,6 +39,15 @@ definitions:
       name:
         type: string
       updatedAt:
+        type: string
+    type: object
+  schema.NewProduct:
+    properties:
+      description:
+        type: string
+      price:
+        type: number
+      unit:
         type: string
     type: object
   schema.NewUser:
@@ -41,9 +67,104 @@ info:
     name: Lucas S. Vieira
     url: https://luksamuk.codes
   description: Minerva System API (v1)
+  license:
+    name: MIT
+    url: https://choosealicense.com/licenses/mit/
   title: Minerva System API
   version: "1.0"
 paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of products per page
+      parameters:
+      - description: page number (0 or more)
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+      summary: Products list
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: new product data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.NewProduct'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+      summary: Create product
+      tags:
+      - Products
+  /products/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get data of a specific product
+      parameters:
+      - description: product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorMessage'
+      summary: Get product
+      tags:
+      - Products
   /users:
     get:
       consumes:
