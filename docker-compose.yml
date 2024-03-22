@@ -187,6 +187,8 @@ services:
       - 9200
     ports:
       - 9200:9200
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s
@@ -211,3 +213,4 @@ services:
 volumes:
   database:
   broker:
+  elasticsearch:
