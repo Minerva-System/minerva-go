@@ -130,7 +130,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - database:/var/lib/mysql
+      - ./deploy/compose-data/database:/var/lib/mysql
     healthcheck:
       interval: 30s
       retries: 50
@@ -153,7 +153,7 @@ services:
     volumes:
       - ./deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
       - ./deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
-      - broker:/var/lib/rabbitmq
+      - ./deploy/compose-data/broker:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -182,7 +182,7 @@ services:
       # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
       # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
       # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-      - ES_JAVA_OPTS=-Xmx1g -Xms1g
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
     expose:
       - 9200
     ports:
@@ -209,8 +209,11 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-      
+
 volumes:
-  database:
-  broker:
   elasticsearch:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './deploy/compose-data/elasticsearch'
