@@ -80,12 +80,14 @@ $(RPC_DIR)/%_grpc.pb.go: $(PROTO_DIR)/%.proto
 
 # ============
 
-# Generation of Docker images for the current architecture
+# Generate and push Docker images for AMD64 and ARM64
 minerva_go_%:
-	docker image build \
+	docker buildx build \
 		-f deploy/Dockerfile \
+		--platform=linux/amd64,linux/arm64 \
 		--target $@ \
-		-t luksamuk/$@ \
+		-t luksamuk/$@:latest \
+		--push \
 		.
 
 
