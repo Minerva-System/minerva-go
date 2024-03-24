@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-plugins
+data:
+  enabled_plugins: |
+    [rabbitmq_management, rabbitmq_prometheus].
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+data:
+  10-defaults.conf: |
+    log.console.level = info
+    channel_max = 1700
+    default_user_tags.administrator = true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minerva-services-dns
+data:
+  MINERVA_USER_HOST: user:9010
+  MINERVA_SESSION_HOST: session:9011
+  MINERVA_PRODUCTS_HOST: products:9012
+  DATABASE_SERVICE_SERVER: mariadb:3306
+  BROKER_SERVICE_SERVER: rabbitmq:5672
+---
