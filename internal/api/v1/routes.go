@@ -27,9 +27,11 @@ func InstallRoutes(router *gin.Engine, server *Server) {
 	api.GET("/users", server.GetUsers)
 	api.GET("/users/:id", server.GetUser)
 	api.POST("/users", server.CreateUser)
+	api.DELETE("/users/:id", server.DeleteUser)
 
 	// Products
 	api.GET("/products", server.GetProducts)
 	api.GET("/products/:id", server.GetProduct)
 	api.POST("/products", server.CreateProduct)
+	api.DELETE("/products/:id", server.DeleteProduct)
 }

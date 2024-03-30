@@ -49,10 +49,8 @@ func (self *Server) GetProducts(ctx *gin.Context) {
 	response, err := client.Index(ctx, &rpc.PageIndex{ Index: &page })
 	if err != nil {
 		log.Error("Failed to retrieve product index: %v", err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Could not connect to products service",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
 		return
 	}
 
@@ -98,10 +96,8 @@ func (self *Server) GetProduct(ctx *gin.Context) {
 	response, err := client.Show(ctx, &rpc.EntityIndex { Index: id })
 	if err != nil {
 		log.Error("Failed to retrieve product %s: %v", id, err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Could not retrieve product",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
 		return
 	}
 
@@ -168,13 +164,46 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 	res, err := model.Product{}.FromMessage(response)
 	if err != nil {
 		log.Error("Error while creating product: %v", err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Error while creating user",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
 	}
 
 	ctx.JSON(201, res)
 }
 
+// @Summary Delete product
+// @Description Delete a specific product
+// @Tags      Products
+// @Accept    json
+// @Param     id    path    string    true    "product UUID"
+// @Success   200   "deleted successfully"
+// @Failure   404     {object}    schema.ErrorMessage
+// @Failure   500     {object}    schema.ErrorMessage
+// @Router    /products/{id} [delete]
+func (self *Server) DeleteProduct(ctx *gin.Context) {
+	id := ctx.Param("id")
+	
+	log.Debug("Retrieving a products service worker...")
+	conn, err := self.Collection.ProductsSvc.Get(ctx)
+	if err != nil {
+		log.Error("Failed to retrieve a products service worker: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status: 500,
+			Message: "Could not connect to products service",
+		})
+		return
+	}
+	defer conn.Close()
 
+	client := rpc.NewProductsClient(conn)
+	_, err = client.Delete(ctx, &rpc.EntityIndex{ Index: id })
+	if err != nil {
+		log.Error("Failed to delete product %s: %v", id, err)
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
+	}
+
+	ctx.Status(200)
+}

@@ -49,10 +49,8 @@ func (self *Server) GetUsers(ctx *gin.Context) {
 	response, err := client.Index(ctx, &rpc.PageIndex{ Index: &page })
 	if err != nil {
 		log.Error("Failed to retrieve user index: %v", err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Could not connect to user service",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
 		return
 	}
 
@@ -100,10 +98,8 @@ func (self *Server) GetUser(ctx *gin.Context) {
 	response, err := client.Show(ctx, &rpc.EntityIndex{ Index: id })
 	if err != nil {
 		log.Error("Failed to retrieve user %s: %v", id, err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Could not retrieve user",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
 		return
 	}
 
@@ -172,11 +168,45 @@ func (self *Server) CreateUser(ctx *gin.Context) {
 	res, err := model.User{}.FromMessage(response)
 	if err != nil {
 		log.Error("Error while creating user: %v", err)
-		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
-			Message: "Error while creating user",
-		})
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
 	}
 
 	ctx.JSON(201, res)
+}
+
+// @Summary Delete user
+// @Description Delete a specific user
+// @Tags      User
+// @Accept    json
+// @Param     id    path    string    true    "user UUID"
+// @Success   200   "deleted successfully"
+// @Failure   404     {object}    schema.ErrorMessage
+// @Failure   500     {object}    schema.ErrorMessage
+// @Router    /users/{id} [delete]
+func (self *Server) DeleteUser(ctx *gin.Context) {
+	id := ctx.Param("id")
+	
+	log.Debug("Retrieving a user service worker...")
+	conn, err := self.Collection.UserSvc.Get(ctx)
+	if err != nil {
+		log.Error("Failed to retrieve a user service worker: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status: 500,
+			Message: "Could not connect to user service",
+		})
+		return
+	}
+	defer conn.Close()
+
+	client := rpc.NewUserClient(conn)
+	_, err = client.Delete(ctx, &rpc.EntityIndex{ Index: id })
+	if err != nil {
+		log.Error("Failed to delete user %s: %v", id, err)
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
+	}
+
+	ctx.Status(200)
 }

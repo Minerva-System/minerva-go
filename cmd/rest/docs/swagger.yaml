@@ -147,6 +147,30 @@ paths:
       tags:
       - Products
   /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific product
+      parameters:
+      - description: product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: deleted successfully
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Delete product
+      tags:
+      - Products
     get:
       consumes:
       - application/json
@@ -239,6 +263,30 @@ paths:
       tags:
       - User
   /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific user
+      parameters:
+      - description: user UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: deleted successfully
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Delete user
+      tags:
+      - User
     get:
       consumes:
       - application/json
