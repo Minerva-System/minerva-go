@@ -20,8 +20,7 @@ func main() {
 	log.Init()
 	gin.SetMode(gin.ReleaseMode)
 	
-	log.Info("Minerva System: REST gateway service (Go port)")
-	log.Info("Copyright (c) 2022-2024 Lucas S. Vieira")
+	log.Info("Minerva System: REST gateway service (Go port), Copyright (c) 2022-2024 Lucas S. Vieira")
 
 	log.Info("Establishing connections...")
 

@@ -21,6 +21,8 @@ services:
         condition: service_started
       products:
         condition: service_started
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -48,6 +50,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -75,6 +79,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -102,6 +108,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      fluentd:
+        condition: service_started
     logging:
       driver: fluentd
       options:
@@ -122,10 +130,10 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - database:/var/lib/mysql
+      - ./deploy/compose-data/database:/var/lib/mysql
     healthcheck:
       interval: 30s
-      retries: 20
+      retries: 50
       test:
         [
           "CMD",
@@ -145,12 +153,12 @@ services:
     volumes:
       - ./deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
       - ./deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
-      - broker:/var/lib/rabbitmq
+      - ./deploy/compose-data/broker:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
       timeout: 30s
-      retries: 20
+      retries: 50
 
   fluentd:
     build: ./deploy/compose-config/fluentd
@@ -166,24 +174,34 @@ services:
         condition: service_healthy
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
+    image: elasticsearch:8.12.2
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xmx2g -Xms2g
+      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
+      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
+      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
     expose:
       - 9200
     ports:
       - 9200:9200
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 30s
-      retries: 20
+      retries: 50
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.1.2
+    image: kibana:8.12.2
+    environment:
+      - xpack.security.enabled=false
+      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
+      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
+      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
     links:
       - elasticsearch
     ports:
@@ -191,7 +209,11 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-      
+
 volumes:
-  database:
-  broker:
+  elasticsearch:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './deploy/compose-data/elasticsearch'

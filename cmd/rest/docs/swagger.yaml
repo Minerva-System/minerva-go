@@ -1,11 +1,21 @@
 basePath: /api/v1
 definitions:
-  model.ErrorMessage:
+  model.Product:
     properties:
-      message:
+      createdAt:
         type: string
-      status:
-        type: integer
+      deletedAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      unit:
+        type: string
+      updatedAt:
+        type: string
     type: object
   model.User:
     properties:
@@ -24,16 +34,46 @@ definitions:
       updatedAt:
         type: string
     type: object
+  schema.ErrorMessage:
+    properties:
+      details:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  schema.NewProduct:
+    properties:
+      description:
+        type: string
+      price:
+        type: number
+      unit:
+        type: string
+    required:
+    - description
+    - price
+    - unit
+    type: object
   schema.NewUser:
     properties:
       email:
         type: string
       login:
+        maxLength: 25
+        minLength: 5
         type: string
       name:
+        maxLength: 100
         type: string
       password:
+        minLength: 8
         type: string
+    required:
+    - login
+    - name
+    - password
     type: object
 info:
   contact:
@@ -41,9 +81,128 @@ info:
     name: Lucas S. Vieira
     url: https://luksamuk.codes
   description: Minerva System API (v1)
+  license:
+    name: MIT
+    url: https://choosealicense.com/licenses/mit/
   title: Minerva System API
   version: "1.0"
 paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of products per page
+      parameters:
+      - description: page number (0 or more)
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Products list
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: new product data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.NewProduct'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Create product
+      tags:
+      - Products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific product
+      parameters:
+      - description: product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: deleted successfully
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Delete product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get data of a specific product
+      parameters:
+      - description: product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Get product
+      tags:
+      - Products
   /users:
     get:
       consumes:
@@ -66,11 +225,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
       summary: User list
       tags:
       - User
@@ -95,15 +254,39 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
       summary: Create user
       tags:
       - User
   /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific user
+      parameters:
+      - description: user UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: deleted successfully
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Delete user
+      tags:
+      - User
     get:
       consumes:
       - application/json
@@ -124,15 +307,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.ErrorMessage'
+            $ref: '#/definitions/schema.ErrorMessage'
       summary: Get user
       tags:
       - User

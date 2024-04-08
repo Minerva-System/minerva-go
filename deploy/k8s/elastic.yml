@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  template:
+    metadata:
+      name: elasticsearch
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch-container
+          image: elasticsearch:8.12.2
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elasticsearch-pv
+          ports:
+            - containerPort: 9200
+          env:
+            - name: discovery.type
+              value: "single-node"
+            - name: xpack.security.enabled
+              value: "false"
+            - name: ES_JAVA_OPTS
+              value: "-Xmx1g -Xms1g"
+      volumes:
+        - name: elasticsearch-pv
+          persistentVolumeClaim:
+            claimName: elasticsearch-pvc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  template:
+    metadata:
+      name: kibana
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana-container
+          image: kibana:8.12.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5601
+          env:
+            - name: xpack.security.enabled
+              value: "false"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+---
