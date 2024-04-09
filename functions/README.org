@@ -111,7 +111,7 @@ We are going to use, as an example, the function ~consumer-test/consumer-test.go
 Let's begin by packaging our function:
 
 #+begin_src bash
-zip -j consumer-test.zip consumer-test/*
+zip -j consumer-test.zip tutorial/consumer-test/*
 
 fission package create \
 	--src consumer-test.zip \
@@ -167,7 +167,7 @@ We     are    going     to    use,     as    an     example,    the     function
 function.
 
 #+begin_src bash
-zip -j producer-test.zip producer-test/*
+zip -j producer-test.zip tutorial/producer-test/*
 
 fission package create \
 	--src producer-test.zip \
