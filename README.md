@@ -2,10 +2,10 @@
 
 Golang refactor of the [Minerva System](https://minerva-system.github.io/minerva-system/).
 
-## Building
+## Local development
 
-Use the `Makefile` to build. You will need a Golang compiler with minimum
-version 1.20.4.
+Use the `Makefile` to build services. You will need a Golang compiler with
+minimum version 1.22.1.
 
 ```bash
 make            # To build everything
@@ -106,3 +106,16 @@ make plan9
 
 Binaries will be created in `9bin`. You may also want to take a look at the
 script in `extra/runsvc.rc` for ease of use in Plan 9.
+
+## Serverless
+
+Some tasks on the system are performed through an event-driven approach. These
+involve the creation of so-called functions. In Minerva System, the functions
+are not attached to a specific architecture, and so they are deployed through
+a Kubernetes-native approach by using the [Fission framework](https://fission.io/).
+
+For more information on Fission functions and their deployment, check the [Serverless tutorial](./functions/README.org).
+
+
+
+

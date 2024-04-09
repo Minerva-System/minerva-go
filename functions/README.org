@@ -1,0 +1,192 @@
+#+title: Minerva System Serverless Functions
+
+* About
+
+This folder contains serverless functions built using the [[https://fission.io][Fission Framework]].
+
+* Installing Keda and Fission
+
+Start by  installing Keda using  Helm. This enables autoscaling  through message
+queues, which we'll use for consuming messages from RabbitMQ.
+
+#+begin_src bash
+helm repo add kedacore https://kedacore.github.io/charts
+helm repo update
+helm install keda kedacore/keda --namespace keda --create-namespace
+#+end_src
+
+Now install Fission using Helm:
+
+#+begin_src bash
+export FISSION_NAMESPACE="fission"
+kubectl create namespace $FISSION_NAMESPACE
+kubectl create -k "github.com/fission/fission/crds/v1?ref=v1.20.1"
+helm repo add fission-charts https://fission.github.io/fission-charts/
+helm repo update
+helm install \
+     --version v1.20.1 \
+     --namespace $FISSION_NAMESPACE fission \
+     --set serviceType=NodePort,routerServiceType=NodePort,mqt_keda.enabled=true \
+     fission-charts/fission-all
+#+end_src
+
+* Creating the spec
+
+All of these commands can be applied using ~fission spec apply~. Start a spec by
+using ~fission spec init~. Furthermore, all  create commands can have a ~--spec~
+flag so they are added to the spec.
+
+* Preparing the environment
+
+The  functions are  created using  Go 1.17.  To create  the environment  and the
+builder for these functions, after installing Fission on your Kubernetes cluster
+and the ~fission~ binary on your machine,  run the following (make sure you have
+a proper ~kubeconfig~ file configured as well):
+
+#+begin_src bash
+fission env create \
+	--name go-1-17 \
+	--image fission/go-env-1.17 \
+	--builder fission/go-builder-1.17
+#+end_src
+
+This should create and environment called  ~go-1-17~, which we will use for this
+project.
+
+** Preparing RabbitMQ
+
+The Fission functions  work preferably with RabbitMQ. Because of  that, you need
+to configure RabbitMQ to work as a  broker to deliver messages that will trigger
+Fission.
+
+Ensure that RabbitMQ is correctly deployed  on your Kubernetes cluster. The file
+~deploy/k8s/rabbitmq.yml~ configures that. RabbitMQ credentials will be found on
+~deploy/k8s/secrets.yml~, under the  ~rabbitmq-credentials~ Secret. Furthermore,
+the    RabbitMQ    server    can    be     found    under    the    full    path
+~rabbitmq.minerva-system.svc:5672~,     as     per    the     definitions     on
+~deploy/k8s/services.yml~.
+
+From this  point forward,  we are  going to  assume that  the Minerva  System is
+deployed under the  ~minerva-system~ namespace, and that  Fission's namespace is
+the ~default~ namespace.
+
+Apply  the  following Secret.  Notice  that  it  is  deployed on  the  ~default~
+namespace explicitly:
+
+#+begin_src yaml :tangle keda-rabbitmq-secret.yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keda-rabbitmq-secret
+  namespace: default
+stringData:
+  host: "amqp://rabbitmq:rabbitmq@rabbitmq.minerva-system.svc:5672/"
+  queueName: reports-topic
+#+end_src
+
+*** Creating the queue
+
+Now, do a port-forward of RabbitMQ dashboard to your local machine.
+
+#+begin_src bash
+kubectl port-forward -n minerva-system deployment/rabbitmq 15672:15672
+#+end_src
+
+Access  ~http://localhost:15672~ on  your browser.  Do a  login with  the proper
+credentials. Then go to /Queues and  Streams/, and create the following durable topics:
+
+- ~reports-response-topic~
+- ~reports-error-topic~
+
+[[https://fission.io/docs/usage/triggers/message-queue-trigger-kind-keda/rabbitmq/#rabbitmq-topics][(For more info, see this link)]].
+
+This is it. You should now be all set.
+
+* Deploying functions
+
+** Deploying a consumer function
+
+We are going to use, as an example, the function ~consumer-test/consumer-test.go~.
+
+Let's begin by packaging our function:
+
+#+begin_src bash
+zip -j consumer-test.zip consumer-test/*
+
+fission package create \
+	--src consumer-test.zip \
+	--env go-1-17 \
+	--name consumer-test
+#+end_src
+
+By then you can see the build progress through the command ~fission pkg list~.
+
+Once the build process is finished, create the actual function:
+
+#+begin_src bash
+fission fn create \
+	--name consumer-test \
+	--env go-1-17 \
+	--pkg consumer-test \
+	--entrypoint Handler
+#+end_src
+
+You can see functions with the ~fission fn list~ command.
+
+*** Adding a trigger
+
+We will  now add  a proper  trigger that will  spawn a  ~consumer-test~ function
+every time there is a message in the ~reports-topic~ queue.
+
+#+begin_src bash
+fission mqtrigger create \
+	--name consumer-test-trigger \
+	--function consumer-test \
+	--mqtype rabbitmq \
+	--mqtkind keda \
+	--topic reports-topic \
+	--resptopic response-topic \
+	--errortopic error-topic \
+	--maxretries 3 \
+	--metadata queueName=reports-topic \
+	--metadata topic=reports-topic \
+	--cooldownperiod=30 \
+	--pollinginterval=5 \
+	--secret keda-rabbitmq-secret
+#+end_src
+
+You can see the triggers using ~fission mqtrigger list~.
+
+
+** Deploying a producer function
+
+This is a producer that we will use to test the ~consumer-test~ function.
+
+We     are    going     to    use,     as    an     example,    the     function
+~producer-test/producer-test.go~.  We  just  need  to  package  and  create  the
+function.
+
+#+begin_src bash
+zip -j producer-test.zip producer-test/*
+
+fission package create \
+	--src producer-test.zip \
+	--env go-1-17 \
+	--name producer-test
+
+fission fn create \
+	--name producer-test \
+	--env go-1-17 \
+	--pkg producer-test \
+	--entrypoint Handler \
+	--secret keda-rabbitmq-secret
+#+end_src
+
+Now send a few messages through the queues by testing it:
+
+#+begin_src bash
+fission fn test --name producer-test
+#+end_src
+
+You can check if your function works by looking at RabbitMQ's queues.
+
