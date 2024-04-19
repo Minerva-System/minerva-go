@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	// grpc "google.golang.org/grpc"
+	grpc "google.golang.org/grpc"
 	status "google.golang.org/grpc/status"
 	codes "google.golang.org/grpc/codes"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -55,4 +55,37 @@ func (self TenantServerImpl) Update(context.Context, *rpc.Company) (*rpc.Company
 func (self TenantServerImpl) Disable(context.Context, *rpc.EntityIndex) (*emptypb.Empty, error) {
 	log.Info("Disable method called")
 	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+}
+
+func ApplyMigrations(col *connection.Collection) {
+	// TODO
+}
+
+func CreateServer() *grpc.Server {
+	log.Info("Initializing tenant server...")
+
+	log.Info("Establishing connections...")
+	col, err := connection.NewCollection(
+		connection.CollectionOptions{
+			WithDatabase: true,
+			WithMessageBroker: true,
+		})
+
+	if err != nil {
+		log.Fatal("Failed to establish connections: %v", err)
+	}
+
+	ApplyMigrations(&col)
+
+	s := &TenantServerImpl{
+		conn: col,
+	}
+
+	log.Info("User server preparations complete.")
+
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+	rpc.RegisterTenantServer(grpcServer, s)
+	
+	return grpcServer
 }
