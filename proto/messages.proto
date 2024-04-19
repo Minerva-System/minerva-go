@@ -118,7 +118,7 @@ message Company {
      google.protobuf.Timestamp updated_at = 6;
      // Timestamp for company disable date (considered a deletion from a
      // functional perspective)
-     google.protobuf.Timestamp deleted_at = 7;
+     optional google.protobuf.Timestamp deleted_at = 7;
 }
 
 // A message containing a list of companies.

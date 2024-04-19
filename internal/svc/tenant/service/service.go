@@ -13,7 +13,7 @@ import (
 	connection "github.com/Minerva-System/minerva-go/internal/connection"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 
-	// model "github.com/Minerva-System/minerva-go/internal/model"
+	model "github.com/Minerva-System/minerva-go/internal/model"
 	// controller "github.com/Minerva-System/minerva-go/internal/svc/tenant/controller"
 )
 
@@ -58,7 +58,10 @@ func (self TenantServerImpl) Disable(context.Context, *rpc.EntityIndex) (*emptyp
 }
 
 func ApplyMigrations(col *connection.Collection) {
-	// TODO
+	log.Info("Migrating company table...")
+	if err := col.DB.AutoMigrate(&model.Company{}); err != nil {
+		log.Fatal("Error while migrating database: %v", err)
+	}
 }
 
 func CreateServer() *grpc.Server {
