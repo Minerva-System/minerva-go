@@ -13,7 +13,7 @@ PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
 PROTO_GRPC_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%_grpc.pb.go,$(filter-out $(PROTO_DIR)/messages.proto,$(PROTO)))
 
 # Docker image names
-DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products
+DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products minerva_go_tenant
 
 # Golang build flags
 export CGO_ENABLED := 0

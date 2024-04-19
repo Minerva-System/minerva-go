@@ -12,6 +12,7 @@ services:
       - MINERVA_USER_HOST=user:9010
       - MINERVA_SESSION_HOST=session:9011
       - MINERVA_PRODUCTS_HOST=products:9012
+      - MINERVa_TENANT_HOST=tenant:9013
     ports:
       - 9000:9000
     depends_on:
@@ -116,6 +117,37 @@ services:
         fluentd-address: localhost:24224
         tag: products
 
+  tenant:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: minerva_go_tenant
+    environment:
+      - MINERVA_LOG_LEVEL=debug
+      - DATABASE_SERVICE_SERVER=mariadb:3306
+      - DATABASE_SERVICE_USER=mysql
+      - DATABASE_SERVICE_PASSWORD=mysql
+      - DATABASE_SERVICE_DBNAME=minerva
+      - BROKER_SERVICE_SERVER=rabbitmq:5672
+      - BROKER_SERVICE_USER=rabbitmq
+      - BROKER_SERVICE_PASSWORD=rabbitmq
+    ports:
+      - 9013:9013
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      fluentd:
+        condition: service_started
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: tenant
+        
+# =========================================
+        
   mariadb:
     image: mariadb:11.3
     environment:
