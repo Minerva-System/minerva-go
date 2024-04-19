@@ -16,6 +16,17 @@ FROM scratch as runner
 ENV TZ=Etc/UTC
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
+# Migration executor
+FROM alpine:latest AS minerva_go_migrate
+RUN apk add --no-cache curl &&\
+    curl -sSf https://atlasgo.sh >/atlasgo.sh &&\
+    sh /atlasgo.sh -y -o /usr/bin/atlas &&\
+    rm /atlasgo.sh
+COPY migrations /minerva/migrations
+COPY atlas.hcl /minerva/atlas.hcl
+WORKDIR /minerva
+CMD ["sh", "-c", "exec atlas migrate apply --url \"maria://$DATABASE_SERVICE_USER:$DATABASE_SERVICE_PASSWORD@$DATABASE_SERVICE_SERVER/$DATABASE_SERVICE_DBNAME\"" ]
+
 
 # REST service
 FROM builder as builder_rest

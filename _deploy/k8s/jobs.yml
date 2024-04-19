@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minerva-migration
+spec:
+  template:
+    metadata:
+      name: migration
+      labels:
+        app: migration
+    spec:
+      containers:
+        - name: migration
+          image: luksamuk/minerva_go_migrate:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: minerva-services-dns
+            - secretRef:
+                name: minerva-credentials
+      restartPolicy: OnFailure
+  backoffLimit: 10
+  ttlSecondsAfterFinished: 30
+---

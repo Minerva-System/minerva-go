@@ -13,12 +13,12 @@ PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
 PROTO_GRPC_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%_grpc.pb.go,$(filter-out $(PROTO_DIR)/messages.proto,$(PROTO)))
 
 # Docker image names
-DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products
+DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products minerva_go_migrate
 
 # Golang build flags
 export CGO_ENABLED := 0
 
-.PHONY: all clean purge docker gen-migration migrate
+.PHONY: all clean purge docker gen-migration migrate migrate-docker
 
 all: protobufs modules
 
@@ -107,6 +107,11 @@ run-%:
 minerva-up:
 	docker compose up
 
+database-up:
+	docker compose up -d --no-deps mariadb
+
+database-down:
+	docker compose down mariadb
 
 # ============
 
@@ -117,5 +122,6 @@ gen-migration:
 
 migrate:
 	atlas migrate apply \
-		--url "maria://mysql:mysql@localhost:3306/minerva
-
+		--url "maria://mysql:mysql@localhost:3306/minerva"
+migrate-k8s:
+	kubectl apply -n minerva-system -f _deploy/k8s/jobs.yml
