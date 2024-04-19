@@ -12,7 +12,6 @@ import (
 	connection "github.com/Minerva-System/minerva-go/internal/connection"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 
-	model "github.com/Minerva-System/minerva-go/internal/model"
 	controller "github.com/Minerva-System/minerva-go/internal/svc/products/controller"
 )
 
