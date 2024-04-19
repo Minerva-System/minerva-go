@@ -18,7 +18,7 @@ DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_produc
 # Golang build flags
 export CGO_ENABLED := 0
 
-.PHONY: all clean purge docker
+.PHONY: all clean purge docker gen-migration migrate
 
 all: protobufs modules
 
@@ -83,7 +83,7 @@ $(RPC_DIR)/%_grpc.pb.go: $(PROTO_DIR)/%.proto
 # Generate and push Docker images for AMD64 and ARM64
 minerva_go_%:
 	docker buildx build \
-		-f deploy/Dockerfile \
+		-f _deploy/Dockerfile \
 		--platform=linux/amd64,linux/arm64 \
 		--target $@ \
 		-t luksamuk/$@:latest \
@@ -106,4 +106,16 @@ run-%:
 
 minerva-up:
 	docker compose up
+
+
+# ============
+
+# Migrations
+
+gen-migration:
+	atlas migrate diff --env gorm
+
+migrate:
+	atlas migrate apply \
+		--url "maria://mysql:mysql@localhost:3306/minerva
 

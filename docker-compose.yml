@@ -4,7 +4,7 @@ services:
   rest:
     build:
       context: .
-      dockerfile: deploy/Dockerfile
+      dockerfile: _deploy/Dockerfile
       target: minerva_go_rest
     environment:
       - GIN_MODE=release
@@ -32,7 +32,7 @@ services:
   user:
     build:
       context: .
-      dockerfile: deploy/Dockerfile
+      dockerfile: _deploy/Dockerfile
       target: minerva_go_user
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -61,7 +61,7 @@ services:
   session:
     build:
       context: .
-      dockerfile: deploy/Dockerfile
+      dockerfile: _deploy/Dockerfile
       target: minerva_go_session
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -90,7 +90,7 @@ services:
   products:
     build:
       context: .
-      dockerfile: deploy/Dockerfile
+      dockerfile: _deploy/Dockerfile
       target: minerva_go_products
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -130,7 +130,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./deploy/compose-data/database:/var/lib/mysql
+      - ./_deploy/compose-data/database:/var/lib/mysql
     healthcheck:
       interval: 30s
       retries: 50
@@ -151,9 +151,9 @@ services:
       - 15672:15672
       - 15692:15692
     volumes:
-      - ./deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-      - ./deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
-      - ./deploy/compose-data/broker:/var/lib/rabbitmq
+      - ./_deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./_deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
+      - ./_deploy/compose-data/broker:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -161,9 +161,9 @@ services:
       retries: 50
 
   fluentd:
-    build: ./deploy/compose-config/fluentd
+    build: ./_deploy/compose-config/fluentd
     volumes:
-      - ./deploy/compose-config/fluentd/config:/fluentd/etc
+      - ./_deploy/compose-config/fluentd/config:/fluentd/etc
     links:
       - elasticsearch
     ports:
@@ -216,4 +216,4 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './deploy/compose-data/elasticsearch'
+      device: './_deploy/compose-data/elasticsearch'

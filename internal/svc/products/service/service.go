@@ -71,13 +71,6 @@ func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex)
 	return &emptypb.Empty{}, controller.DeleteProduct(self.conn.DB, idx.Index)
 }
 
-func ApplyMigrations(col *connection.Collection) {
-	log.Info("Migrating product table...")
-	if err := col.DB.AutoMigrate(&model.Product{}); err != nil {
-		log.Fatal("Error while migrating database: %v", err)
-	}
-}
-
 func CreateServer() *grpc.Server {
 	log.Info("Initializing products server...")
 
@@ -91,8 +84,6 @@ func CreateServer() *grpc.Server {
 	if err != nil {
 		log.Fatal("Failed to establish connections: %v", err)
 	}
-
-	ApplyMigrations(&col)
 	
 	s := &ProductsServerImpl{
 		conn: col,

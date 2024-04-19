@@ -76,14 +76,6 @@ func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*e
 	return &emptypb.Empty{}, controller.DeleteUser(self.conn.DB, idx.Index)
 }
 
-
-func ApplyMigrations(col *connection.Collection) {
-	log.Info("Migrating user table...")
-	if err := col.DB.AutoMigrate(&model.User{}); err != nil {
-		log.Fatal("Error while migrating database: %v", err)
-	}
-}
-
 func CreateServer() *grpc.Server {
 	log.Info("Initializing user server...")
 
@@ -97,8 +89,6 @@ func CreateServer() *grpc.Server {
 	if err != nil {
 		log.Fatal("Failed to establish connections: %v", err)
 	}
-
-	ApplyMigrations(&col)
 
 	s := &UserServerImpl{
 		conn: col,

@@ -61,7 +61,7 @@ following:
 
 ```
 docker image build \
-	-f deploy/Dockerfile \
+	-f _deploy/Dockerfile \
 	--target MODULENAME \
 	-t MODULENAME \
 	.
@@ -84,7 +84,7 @@ DockerHub under my username:
 
 ```
 docker buildx build \
-	-f deploy/Dockerfile \
+	-f _deploy/Dockerfile \
 	--target minerva_go_rest \
 	--platform=linux/amd64,linux/arm64 \
 	-t luksamuk/minerva_go_rest \
@@ -106,3 +106,17 @@ make plan9
 
 Binaries will be created in `9bin`. You may also want to take a look at the
 script in `extra/runsvc.rc` for ease of use in Plan 9.
+
+## Migrations
+
+Migrations are executed by using the [Atlas](https://atlasgo.io/) tool.
+For more information on Atlas integration with GORM, see [this link](https://atlasgo.io/guides/orms/gorm).
+
+To install Atlas, use:
+
+```bash
+curl -sSf https://atlasgo.sh | sh
+```
+
+This also uses the Atlas GORM Provider, which is installed as a project dependency.
+
