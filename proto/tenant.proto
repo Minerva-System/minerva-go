@@ -1,0 +1,33 @@
+syntax = "proto3";
+import "messages.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "./minerva_rpc";
+
+// This Protocol Buffer describes the service for managing multi-tenancy.
+
+package Tenant;
+
+service Tenant {
+     // List all companies, given a page index.
+     rpc index(Messages.PageIndex) returns (Messages.CompanyList) {}
+
+     // Show a specific company, given its index.
+     rpc show(Messages.EntityIndex) returns (Messages.Company) {}
+
+     // Show a specific company, given its unique slug identifier.
+     rpc showBySlug(Messages.EntityIndex) returns (Messages.Company) {}
+
+     // Checks whether a company exists, given its index.
+     rpc exists(Messages.EntityIndex) returns (google.protobuf.BoolValue) {}
+
+     // Include a new company and return it.
+     rpc store(Messages.Company) returns (Messages.Company) {}
+
+     // Update a company and return it.
+     rpc update(Messages.Company) returns (Messages.Company) {}
+
+     // Disable a company.
+     rpc disable(Messages.EntityIndex) returns (google.protobuf.Empty) {}
+}
