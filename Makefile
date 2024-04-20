@@ -97,7 +97,7 @@ minerva_go_%:
 
 run-%:
 	go generate cmd/$(subst run-,,$@)/main.go
-	go run cmd/$(subst run-,,$@)/main.go | jq
+	go run cmd/$(subst run-,,$@)/main.go
 
 
 # ============

@@ -21,7 +21,14 @@ func Init() {
 		Level: level,
 	}
 
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, opts)))
+	switch os.Getenv("MINERVA_LOG_TYPE") {
+	default:
+		fallthrough
+	case "json":
+		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, opts)))
+	case "text":
+		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, opts)))
+	}
 	Info("Log level set to %s", level)
 }
 
