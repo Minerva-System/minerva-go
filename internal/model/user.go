@@ -11,8 +11,8 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:UUID()" json:"id"`
-	CompanyID uuid.UUID `gorm:"type:uuid;not null" json:"-"`
+	ID        uuid.UUID `gorm:"type:uuid;default:UUID();primaryKey" json:"id"`
+	CompanyID uuid.UUID `gorm:"type:uuid;primaryKey" json:"-"`
 	Login     string    `json:"login" gorm:"unique"`
 	Name      string    `json:"name" gorm:"not null"`
 	Email     *string   `json:"email,omitempty"`
@@ -26,11 +26,12 @@ func (m *User) ToMessage() rpc.User {
 	id := m.ID.String()
 
 	return rpc.User{
-		Id:       &id,
-		Login:    m.Login,
-		Name:     m.Name,
-		Email:    m.Email,
-		Password: nil, // Never give back a password hash
+		Id:        &id,
+		CompanyId: m.CompanyID.String(),
+		Login:     m.Login,
+		Name:      m.Name,
+		Email:     m.Email,
+		Password:  nil, // Never give back a password hash
 	}
 }
 
@@ -57,6 +58,13 @@ func (User) FromMessage(m *rpc.User) (User, error) {
 		}
 	}
 
+	log.Debug("Parsing company UUID: %s", m.CompanyId)
+	companyId, err := uuid.Parse(m.CompanyId)
+	if err != nil {
+		log.Error("Unable to parse company UUID from gRPC message to User model: %v", err)
+		return User{}, err
+	}
+
 	if m.Password != nil {
 		pwhash, err = bcrypt.GenerateFromPassword([]byte(*m.Password), 8)
 		if err != nil {
@@ -66,11 +74,12 @@ func (User) FromMessage(m *rpc.User) (User, error) {
 	}
 
 	return User{
-		ID:     id,
-		Login:  m.Login,
-		Name:   m.Name,
-		Email:  m.Email,
-		Pwhash: pwhash,
+		ID:        id,
+		CompanyID: companyId,
+		Login:     m.Login,
+		Name:      m.Name,
+		Email:     m.Email,
+		Pwhash:    pwhash,
 	}, nil
 }
 

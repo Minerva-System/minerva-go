@@ -21,7 +21,7 @@ type UserServerImpl struct {
 	conn connection.Collection
 }
 
-func (self UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.UserList, error) {
+func (self UserServerImpl) Index(ctx context.Context, idx *rpc.TenantPageIndex) (*rpc.UserList, error) {
 	log.Info("Index method called")
 
 	if (idx == nil) || (idx.Index == nil) {
@@ -29,10 +29,10 @@ func (self UserServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.
 		return nil, status.Error(codes.InvalidArgument, "Missing page index parameter")
 	}
 	
-	return controller.UserIndex(self.conn.DB, *idx.Index)
+	return controller.UserIndex(self.conn.DB, idx.CompanyId, *idx.Index)
 }
 
-func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.User, error) {
+func (self UserServerImpl) Show(ctx context.Context, idx *rpc.TenantEntityIndex) (*rpc.User, error) {
 	log.Info("Show method called")
 
 	if idx == nil {
@@ -40,7 +40,7 @@ func (self UserServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc
 		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
 	}
 
-	return controller.GetUser(self.conn.DB, idx.Index)
+	return controller.GetUser(self.conn.DB, idx.CompanyId, idx.Index)
 }
 
 func (self UserServerImpl) Store(ctx context.Context, user *rpc.User) (*rpc.User, error) {
@@ -65,7 +65,7 @@ func (self UserServerImpl) Update(ctx context.Context, user *rpc.User) (*rpc.Use
 	return controller.UpdateUser(self.conn.DB, user)
 }
 
-func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
+func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.TenantEntityIndex) (*emptypb.Empty, error) {
 	log.Info("Delete method called")
 
 	if idx == nil {
@@ -73,7 +73,7 @@ func (self UserServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*e
 		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
 	}
 	
-	return &emptypb.Empty{}, controller.DeleteUser(self.conn.DB, idx.Index)
+	return &emptypb.Empty{}, controller.DeleteUser(self.conn.DB, idx.CompanyId, idx.Index)
 }
 
 

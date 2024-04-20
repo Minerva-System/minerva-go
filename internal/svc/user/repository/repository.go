@@ -8,15 +8,18 @@ import (
 	model "github.com/Minerva-System/minerva-go/internal/model"
 )
 
-func GetUser(db *gorm.DB, id uuid.UUID) (model.User, error) {
+func GetUser(db *gorm.DB, companyId uuid.UUID, id uuid.UUID) (model.User, error) {
 	var user model.User
-	result := db.First(&user, "id = ?", id)
+	result := db.
+		Where("company_id = ?", companyId).
+		First(&user, "id = ?", id)
 	return user, result.Error
 }
 
-func ListUsers(db *gorm.DB, offset int, limit int) ([]model.User, error) {
+func ListUsers(db *gorm.DB, companyId uuid.UUID, offset int, limit int) ([]model.User, error) {
 	var users []model.User
 	result := db.Find(&users).
+		Where("company_id = ?", companyId).
 		Limit(limit).
 		Offset(offset)
 	return users, result.Error
@@ -32,15 +35,15 @@ func CreateUser(db *gorm.DB, data model.User) (model.User, error) {
 	return data, nil
 }
 
-func DeleteUser(db *gorm.DB, id uuid.UUID) error {
-	return db.Delete(&model.User{}, "id = ?", id).Error
+func DeleteUser(db *gorm.DB, companyId uuid.UUID, id uuid.UUID) error {
+	return db.Delete(&model.User{}, "id = ? AND company_id = ?", id, companyId).Error
 }
 
-func ExistsUser(db *gorm.DB, id uuid.UUID) (bool, error) {
+func ExistsUser(db *gorm.DB, companyId uuid.UUID, id uuid.UUID) (bool, error) {
 	var exists bool = false
 	result := db.Model(&model.User{}).
 		Select("COUNT(*) > 0").
-		Where("ID = ?", id).
+		Where("id = ? AND company_id = ?", id, companyId).
 		Find(&exists)
 	return exists, result.Error
 }
@@ -51,6 +54,7 @@ func UpdateUser(db *gorm.DB, data model.User) (model.User, error) {
 		result := db.Model(&data).
 			Updates(model.User{
 				ID: data.ID,
+				CompanyID: data.CompanyID,
 				Name: data.Name,
 				Pwhash: data.Pwhash,
 				Email: data.Email,
@@ -70,5 +74,5 @@ func UpdateUser(db *gorm.DB, data model.User) (model.User, error) {
 		return model.User{}, err
 	}
 	
-	return GetUser(db, data.ID)
+	return GetUser(db, data.CompanyID, data.ID)
 }
