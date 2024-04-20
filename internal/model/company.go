@@ -12,7 +12,7 @@ import (
 
 type Company struct {
 	ID          uuid.UUID  `gorm:"type:uuid;default:UUID()" json:"id"`
-	Slug        string     `gorm:"unique,index,not null" json:"slug"`
+	Slug        string     `gorm:"unique" json:"slug"`
 	CompanyName string     `gorm:"not null" json:"companyName"`
 	TradingName string     `gorm:"not null" json:"tradingName"`
 	CreatedAt   time.Time  `gorm:"not null,autoCreateTime" json:"createdAt"`
