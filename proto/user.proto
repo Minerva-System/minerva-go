@@ -10,10 +10,10 @@ package User;
 
 service User {
      // List all users, given a page index.
-     rpc index(Messages.PageIndex) returns (Messages.UserList) {}
+     rpc index(Messages.TenantPageIndex) returns (Messages.UserList) {}
 
      // Show a specific user, given its index.
-     rpc show(Messages.EntityIndex) returns (Messages.User) {}
+     rpc show(Messages.TenantEntityIndex) returns (Messages.User) {}
 
      // Include a new user and return it.
      rpc store(Messages.User) returns (Messages.User) {}
@@ -22,5 +22,5 @@ service User {
      rpc update(Messages.User) returns (Messages.User) {}
 
      // Delete a user.
-     rpc delete(Messages.EntityIndex) returns (google.protobuf.Empty) {}
+     rpc delete(Messages.TenantEntityIndex) returns (google.protobuf.Empty) {}
 }
