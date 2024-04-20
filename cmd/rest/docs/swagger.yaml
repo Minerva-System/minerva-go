@@ -1,5 +1,20 @@
 basePath: /api/v1
 definitions:
+  model.Company:
+    properties:
+      companyName:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      slug:
+        type: string
+      tradingName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   model.Product:
     properties:
       createdAt:
@@ -29,6 +44,11 @@ definitions:
         type: string
       updatedAt:
         type: string
+    type: object
+  schema.BooleanResponse:
+    properties:
+      value:
+        type: boolean
     type: object
   schema.ErrorMessage:
     properties:
@@ -371,4 +391,213 @@ paths:
       summary: Get user
       tags:
       - User
+  /companies:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of companies per page
+      parameters:
+      - description: page number (0 or more)
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Company'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Company list
+      tags:
+      - Tenant
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
+  /companies/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: company UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: disabled successfully
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: company UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: company UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
+  /companies/by-slug/{slug}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: company slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
+  /companies/exists:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: company UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.BooleanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      tags:
+      - Tenant
 swagger: "2.0"

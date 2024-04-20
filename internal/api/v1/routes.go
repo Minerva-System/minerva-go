@@ -24,6 +24,13 @@ func InstallRoutes(router *gin.Engine, server *Server) {
 	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Tenant
+	api.GET("/companies", server.GetCompanies)
+	api.GET("/companies/:id", server.GetCompany)
+	api.GET("/companies/by-slug/:slug", server.GetCompanyBySlug)
+	api.GET("/companies/exists", server.GetCompanyExists)
+	api.POST("/companies", server.CreateCompany)
+	api.PUT("/companies/:id", server.UpdateCompany)
+	api.DELETE("/companies/:id", server.DisableCompany)
 
 	/* Tenant-specific routes */
 	tenant := api.Group("/:company", server.TenantCheckMiddleware())
