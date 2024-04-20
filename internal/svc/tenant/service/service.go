@@ -14,7 +14,7 @@ import (
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 
 	model "github.com/Minerva-System/minerva-go/internal/model"
-	// controller "github.com/Minerva-System/minerva-go/internal/svc/tenant/controller"
+	controller "github.com/Minerva-System/minerva-go/internal/svc/tenant/controller"
 )
 
 type TenantServerImpl struct {
@@ -22,39 +22,81 @@ type TenantServerImpl struct {
 	conn connection.Collection
 }
 
-func (self TenantServerImpl) Index(context.Context, *rpc.PageIndex) (*rpc.CompanyList, error) {
+func (self TenantServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.CompanyList, error) {
 	log.Info("Index method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if (idx == nil) || (idx.Index == nil) {
+		log.Error("Index method failed: Missing page index parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing page index parameter")
+	}
+
+	return controller.CompanyIndex(self.conn.DB, *idx.Index)
 }
 
-func (self TenantServerImpl) Show(context.Context, *rpc.EntityIndex) (*rpc.Company, error) {
+func (self TenantServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.Company, error) {
 	log.Info("Show method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if idx == nil {
+		log.Error("Show method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+
+	return controller.GetCompany(self.conn.DB, idx.Index)
 }
 
-func (self TenantServerImpl) ShowBySlug(context.Context, *rpc.EntityIndex) (*rpc.Company, error) {
+func (self TenantServerImpl) ShowBySlug(ctx context.Context, idx *rpc.EntityIndex) (*rpc.Company, error) {
 	log.Info("ShowBySlug method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if idx == nil {
+		log.Error("ShowBySlug method failed: missing slug parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing slug parameter")
+	}
+
+	return controller.GetCompanyBySlug(self.conn.DB, idx.Index)
 }
 
-func (self TenantServerImpl) Exists(context.Context, *rpc.EntityIndex) (*wrapperspb.BoolValue, error) {
+func (self TenantServerImpl) Exists(ctx context.Context, idx *rpc.EntityIndex) (*wrapperspb.BoolValue, error) {
 	log.Info("Exists method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if idx == nil {
+		log.Error("Exists method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+
+	return controller.GetCompanyExists(self.conn.DB, idx.Index)
 }
 
-func (self TenantServerImpl) Store(context.Context, *rpc.Company) (*rpc.Company, error) {
+func (self TenantServerImpl) Store(ctx context.Context, company *rpc.Company) (*rpc.Company, error) {
 	log.Info("Store method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if company == nil {
+		log.Error("Store method failed: missing new company data")
+		return nil, status.Error(codes.InvalidArgument, "Missing new company data")
+	}
+
+	return controller.CreateCompany(self.conn.DB, company)
 }
 
-func (self TenantServerImpl) Update(context.Context, *rpc.Company) (*rpc.Company, error) {
+func (self TenantServerImpl) Update(ctx context.Context, company *rpc.Company) (*rpc.Company, error) {
 	log.Info("Update method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if company == nil {
+		log.Error("Update method failed: missing new company data")
+		return nil, status.Error(codes.InvalidArgument, "Missing new company data")
+	}
+
+	return controller.UpdateCompany(self.conn.DB, company)
 }
 
-func (self TenantServerImpl) Disable(context.Context, *rpc.EntityIndex) (*emptypb.Empty, error) {
+func (self TenantServerImpl) Disable(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
 	log.Info("Disable method called")
-	return nil, status.Error(codes.Unimplemented, "Method unimplemented")
+
+	if idx == nil {
+		log.Error("Disable method failed: missing id parameter")
+		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
+	}
+
+	return &emptypb.Empty{}, controller.DisableCompany(self.conn.DB, idx.Index)
 }
 
 func ApplyMigrations(col *connection.Collection) {
