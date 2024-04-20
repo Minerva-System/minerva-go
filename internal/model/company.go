@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	"gorm.io/gorm"
 
 	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
@@ -12,21 +13,17 @@ import (
 )
 
 type Company struct {
-	ID          uuid.UUID  `gorm:"type:uuid;default:UUID()" json:"id"`
-	Slug        string     `gorm:"unique" json:"slug"`
-	CompanyName string     `gorm:"not null" json:"companyName"`
-	TradingName string     `gorm:"not null" json:"tradingName"`
-	CreatedAt   time.Time  `gorm:"not null,autoCreateTime" json:"createdAt"`
-	UpdatedAt   time.Time  `gorm:"not null,autoUpdateTime" json:"updatedAt"`
-	DeletedAt   *time.Time `gorm:"index" json:"deletedAt,omitempty"`
+	ID          uuid.UUID      `gorm:"type:uuid;default:UUID()" json:"id"`
+	Slug        string         `gorm:"unique" json:"slug"`
+	CompanyName string         `gorm:"not null" json:"companyName"`
+	TradingName string         `gorm:"not null" json:"tradingName"`
+	CreatedAt   time.Time      `json:"createdAt"`
+	UpdatedAt   time.Time      `json:"updatedAt"`
+	DeletedAt   gorm.DeletedAt `json:"-"`
 }
 
 func (m *Company) ToMessage() rpc.Company {
 	id := m.ID.String()
-	var deleted_at *timestamppb.Timestamp = nil
-	if m.DeletedAt != nil {
-		deleted_at = timestamppb.New(*m.DeletedAt)
-	}
 
 	return rpc.Company{
 		Id:          &id,
@@ -35,7 +32,6 @@ func (m *Company) ToMessage() rpc.Company {
 		TradingName: m.TradingName,
 		CreatedAt:   timestamppb.New(m.CreatedAt),
 		UpdatedAt:   timestamppb.New(m.UpdatedAt),
-		DeletedAt:   deleted_at,
 	}
 }
 
@@ -67,12 +63,6 @@ func (Company) FromMessage(m *rpc.Company) (Company, error) {
 		return Company{}, err
 	}
 
-	var deleted_at *time.Time = nil
-	if m.DeletedAt != nil {
-		t := m.DeletedAt.AsTime()
-		deleted_at = &t
-	}
-
 	return Company{
 		ID:          id,
 		Slug:        slug,
@@ -80,7 +70,6 @@ func (Company) FromMessage(m *rpc.Company) (Company, error) {
 		TradingName: m.TradingName,
 		CreatedAt:   m.CreatedAt.AsTime(),
 		UpdatedAt:   m.UpdatedAt.AsTime(),
-		DeletedAt:   deleted_at,
 	}, nil
 }
 

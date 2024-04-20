@@ -2,7 +2,7 @@ package model
 
 import (
 	"time"
-	
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
@@ -11,24 +11,25 @@ import (
 )
 
 type User struct {
-	ID uuid.UUID         `gorm:"type:uuid;default:UUID()" json:"id"`
-	Login string         `json:"login" gorm:"unique"`
-	Name string          `json:"name" gorm:"not null"`
-	Email *string        `json:"email,omitempty"`
-	Pwhash []byte        `json:"-" gorm:"not null"`
-	CreatedAt time.Time  `json:"createdAt" gorm:"not null,autoCreateTime"`
-	UpdatedAt time.Time  `json:"updatedAt" gorm:"not null,autoUpdateTime"`
-	DeletedAt *time.Time `gorm:"index" json:"deletedAt,omitempty"`
+	ID        uuid.UUID `gorm:"type:uuid;default:UUID()" json:"id"`
+	CompanyID uuid.UUID `gorm:"type:uuid;not null" json:"-"`
+	Login     string    `json:"login" gorm:"unique"`
+	Name      string    `json:"name" gorm:"not null"`
+	Email     *string   `json:"email,omitempty"`
+	Pwhash    []byte    `json:"-" gorm:"not null"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Company   Company   `gorm:"foreignKey:CompanyID;references:ID" json:"-"`
 }
 
 func (m *User) ToMessage() rpc.User {
 	id := m.ID.String()
-	
+
 	return rpc.User{
-		Id: &id,
-		Login: m.Login,
-		Name: m.Name,
-		Email: m.Email,
+		Id:       &id,
+		Login:    m.Login,
+		Name:     m.Name,
+		Email:    m.Email,
 		Password: nil, // Never give back a password hash
 	}
 }
@@ -55,7 +56,7 @@ func (User) FromMessage(m *rpc.User) (User, error) {
 			return User{}, err
 		}
 	}
-	
+
 	if m.Password != nil {
 		pwhash, err = bcrypt.GenerateFromPassword([]byte(*m.Password), 8)
 		if err != nil {
@@ -65,10 +66,10 @@ func (User) FromMessage(m *rpc.User) (User, error) {
 	}
 
 	return User{
-		ID: id,
-		Login: m.Login,
-		Name: m.Name,
-		Email: m.Email,
+		ID:     id,
+		Login:  m.Login,
+		Name:   m.Name,
+		Email:  m.Email,
 		Pwhash: pwhash,
 	}, nil
 }
@@ -86,4 +87,3 @@ func (User) FromListMessage(xs *rpc.UserList) ([]User, error) {
 	}
 	return result, nil
 }
-

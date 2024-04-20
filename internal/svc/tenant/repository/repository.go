@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
@@ -40,13 +38,9 @@ func CreateCompany(db *gorm.DB, data model.Company) (model.Company, error) {
 }
 
 func DisableCompany(db *gorm.DB, id uuid.UUID) error {
-	now := time.Now()
-	result := db.Model(&model.Company{}).
-		Where("id = ?", id).
-		Updates(model.Company{
-			DeletedAt: &now,
-		})
-	return result.Error
+	// Since Company has a field of type gorm.DeletedAt, it is always
+	// soft-deleted and never queryable through GORM itself
+	return db.Delete(&model.Company{}, "id = ?", id).Error
 }
 
 func ExistsCompany(db *gorm.DB, id uuid.UUID) (bool, error) {

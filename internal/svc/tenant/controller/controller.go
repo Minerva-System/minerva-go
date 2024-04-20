@@ -142,15 +142,18 @@ func DisableCompany(db *gorm.DB, id string) error {
 		return status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
 	}
 
-	company, err := repository.GetCompany(db, parsedId)
+	// If the company was soft-deleted, then it isn't queryable, even when checking
+	// for its existence. So if it doesn't exist from the GORM perspective, we
+	// don't need to disable it again anyway
+	exists, err := repository.ExistsCompany(db, parsedId)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)
 	}
 
-	if company.DeletedAt != nil {
-		log.Error("Company \"%s\" has already been disabled", id)
-		return status.Error(codes.FailedPrecondition, "Company has already been disabled")
+	if !exists {
+		log.Error("Company does not exist or is already disabled")
+		return status.Errorf(codes.NotFound, "Company does not exist or is already disabled")
 	}
 
 	return repository.DisableCompany(db, parsedId)
