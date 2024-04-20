@@ -20,7 +20,7 @@ const PAGESIZE = 100
 
 func UserIndex(db *gorm.DB, page int64) (*rpc.UserList, error) {
 	if page < 0 {
-		log.Error("User controller: Invalid page index: %d", page)
+		log.Error("Invalid page index: %d", page)
 		return nil, status.Error(codes.OutOfRange, "Invalid user list page")
 	}
 

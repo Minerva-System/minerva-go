@@ -53,10 +53,20 @@ func ExistsCompany(db *gorm.DB, id uuid.UUID) (bool, error) {
 	var exists bool = false
 	result := db.Model(&model.Company{}).
 		Select("COUNT(*) > 0").
-		Where("ID = ?", id).
+		Where("id = ?", id).
 		Find(&exists)
 	return exists, result.Error
 }
+
+func ExistsCompanyBySlug(db *gorm.DB, slug string) (bool, error) {
+	var exists bool = false
+	result := db.Model(&model.Company{}).
+		Select("COUNT(*) > 0").
+		Where("slug = ?", slug).
+		Find(&exists)
+	return exists, result.Error
+}
+
 
 func UpdateCompany(db *gorm.DB, data model.Company) (model.Company, error) {
 	result := db.Model(&data).

@@ -8,6 +8,7 @@ import (
 
 	rpc "github.com/Minerva-System/minerva-go/internal/rpc"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
+	util "github.com/Minerva-System/minerva-go/pkg/util"
 )
 
 type Company struct {
@@ -60,6 +61,12 @@ func (Company) FromMessage(m *rpc.Company) (Company, error) {
 		}
 	}
 
+	slug, err := util.HygienizeSlug(m.Slug)
+	if err != nil {
+		log.Error("Error hygienizing company slug: %v", err)
+		return Company{}, err
+	}
+
 	var deleted_at *time.Time = nil
 	if m.DeletedAt != nil {
 		t := m.DeletedAt.AsTime()
@@ -68,7 +75,7 @@ func (Company) FromMessage(m *rpc.Company) (Company, error) {
 
 	return Company{
 		ID:          id,
-		Slug:        m.Slug,
+		Slug:        slug,
 		CompanyName: m.CompanyName,
 		TradingName: m.TradingName,
 		CreatedAt:   m.CreatedAt.AsTime(),
