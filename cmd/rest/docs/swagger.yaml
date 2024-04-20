@@ -111,6 +111,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
         "500":
           description: Internal Server Error
           schema:
@@ -143,6 +147,10 @@ paths:
             $ref: '#/definitions/model.Product'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
         "500":
@@ -247,6 +255,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
         "500":
           description: Internal Server Error
           schema:
@@ -279,6 +291,10 @@ paths:
             $ref: '#/definitions/model.User'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
         "500":

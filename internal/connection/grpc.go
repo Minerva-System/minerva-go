@@ -38,7 +38,7 @@ func newGrpcClientPool(clientKind string) (*grpcpool.Pool, error) {
 			return nil, err
 		}
 		log.Info(
-			"Connection pool to %s (%s) was created. Connections will be created on demand.",
+			"Connection to %s (%s) created",
 			clientKind,
 			host,
 		)
