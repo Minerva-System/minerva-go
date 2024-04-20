@@ -17,7 +17,7 @@ func StringToUnit(unit string) string {
 
 func HygienizeSlug(slug string) (string, error) {
 	s := strings.ToLower(strings.TrimSpace(slug))
-	if regexp.MustCompile(`\s*`).MatchString(s) {
+	if regexp.MustCompile(`\s`).MatchString(s) {
 		return slug, errors.New("Slug must not have whitespaces")
 	}
 	return s, nil

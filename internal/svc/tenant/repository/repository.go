@@ -42,8 +42,8 @@ func CreateCompany(db *gorm.DB, data model.Company) (model.Company, error) {
 func DisableCompany(db *gorm.DB, id uuid.UUID) error {
 	now := time.Now()
 	result := db.Model(&model.Company{}).
+		Where("id = ?", id).
 		Updates(model.Company{
-			ID: id,
 			DeletedAt: &now,
 		})
 	return result.Error
