@@ -34,15 +34,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	// List all users, given a page index.
-	Index(ctx context.Context, in *PageIndex, opts ...grpc.CallOption) (*UserList, error)
+	Index(ctx context.Context, in *TenantPageIndex, opts ...grpc.CallOption) (*UserList, error)
 	// Show a specific user, given its index.
-	Show(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*User, error)
+	Show(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*User, error)
 	// Include a new user and return it.
 	Store(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	// Update a user and return it.
 	Update(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	// Delete a user.
-	Delete(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Delete(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userClient struct {
@@ -53,7 +53,7 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
-func (c *userClient) Index(ctx context.Context, in *PageIndex, opts ...grpc.CallOption) (*UserList, error) {
+func (c *userClient) Index(ctx context.Context, in *TenantPageIndex, opts ...grpc.CallOption) (*UserList, error) {
 	out := new(UserList)
 	err := c.cc.Invoke(ctx, User_Index_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -62,7 +62,7 @@ func (c *userClient) Index(ctx context.Context, in *PageIndex, opts ...grpc.Call
 	return out, nil
 }
 
-func (c *userClient) Show(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*User, error) {
+func (c *userClient) Show(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*User, error) {
 	out := new(User)
 	err := c.cc.Invoke(ctx, User_Show_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -89,7 +89,7 @@ func (c *userClient) Update(ctx context.Context, in *User, opts ...grpc.CallOpti
 	return out, nil
 }
 
-func (c *userClient) Delete(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *userClient) Delete(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, User_Delete_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -103,15 +103,15 @@ func (c *userClient) Delete(ctx context.Context, in *EntityIndex, opts ...grpc.C
 // for forward compatibility
 type UserServer interface {
 	// List all users, given a page index.
-	Index(context.Context, *PageIndex) (*UserList, error)
+	Index(context.Context, *TenantPageIndex) (*UserList, error)
 	// Show a specific user, given its index.
-	Show(context.Context, *EntityIndex) (*User, error)
+	Show(context.Context, *TenantEntityIndex) (*User, error)
 	// Include a new user and return it.
 	Store(context.Context, *User) (*User, error)
 	// Update a user and return it.
 	Update(context.Context, *User) (*User, error)
 	// Delete a user.
-	Delete(context.Context, *EntityIndex) (*emptypb.Empty, error)
+	Delete(context.Context, *TenantEntityIndex) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -119,10 +119,10 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
-func (UnimplementedUserServer) Index(context.Context, *PageIndex) (*UserList, error) {
+func (UnimplementedUserServer) Index(context.Context, *TenantPageIndex) (*UserList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
-func (UnimplementedUserServer) Show(context.Context, *EntityIndex) (*User, error) {
+func (UnimplementedUserServer) Show(context.Context, *TenantEntityIndex) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 func (UnimplementedUserServer) Store(context.Context, *User) (*User, error) {
@@ -131,7 +131,7 @@ func (UnimplementedUserServer) Store(context.Context, *User) (*User, error) {
 func (UnimplementedUserServer) Update(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedUserServer) Delete(context.Context, *EntityIndex) (*emptypb.Empty, error) {
+func (UnimplementedUserServer) Delete(context.Context, *TenantEntityIndex) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
@@ -148,7 +148,7 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 }
 
 func _User_Index_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PageIndex)
+	in := new(TenantPageIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -160,13 +160,13 @@ func _User_Index_Handler(srv interface{}, ctx context.Context, dec func(interfac
 		FullMethod: User_Index_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Index(ctx, req.(*PageIndex))
+		return srv.(UserServer).Index(ctx, req.(*TenantPageIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_Show_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EntityIndex)
+	in := new(TenantEntityIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -178,7 +178,7 @@ func _User_Show_Handler(srv interface{}, ctx context.Context, dec func(interface
 		FullMethod: User_Show_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Show(ctx, req.(*EntityIndex))
+		return srv.(UserServer).Show(ctx, req.(*TenantEntityIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,7 +220,7 @@ func _User_Update_Handler(srv interface{}, ctx context.Context, dec func(interfa
 }
 
 func _User_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EntityIndex)
+	in := new(TenantEntityIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func _User_Delete_Handler(srv interface{}, ctx context.Context, dec func(interfa
 		FullMethod: User_Delete_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Delete(ctx, req.(*EntityIndex))
+		return srv.(UserServer).Delete(ctx, req.(*TenantEntityIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -34,15 +34,15 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductsClient interface {
 	// List all products, given a page index.
-	Index(ctx context.Context, in *PageIndex, opts ...grpc.CallOption) (*ProductList, error)
+	Index(ctx context.Context, in *TenantPageIndex, opts ...grpc.CallOption) (*ProductList, error)
 	// Show a specific product, given its index.
-	Show(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*Product, error)
+	Show(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*Product, error)
 	// Include a new product and return it.
 	Store(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Product, error)
 	// Update a product and return it.
 	Update(ctx context.Context, in *Product, opts ...grpc.CallOption) (*Product, error)
 	// Delete a product.
-	Delete(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Delete(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type productsClient struct {
@@ -53,7 +53,7 @@ func NewProductsClient(cc grpc.ClientConnInterface) ProductsClient {
 	return &productsClient{cc}
 }
 
-func (c *productsClient) Index(ctx context.Context, in *PageIndex, opts ...grpc.CallOption) (*ProductList, error) {
+func (c *productsClient) Index(ctx context.Context, in *TenantPageIndex, opts ...grpc.CallOption) (*ProductList, error) {
 	out := new(ProductList)
 	err := c.cc.Invoke(ctx, Products_Index_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -62,7 +62,7 @@ func (c *productsClient) Index(ctx context.Context, in *PageIndex, opts ...grpc.
 	return out, nil
 }
 
-func (c *productsClient) Show(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*Product, error) {
+func (c *productsClient) Show(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*Product, error) {
 	out := new(Product)
 	err := c.cc.Invoke(ctx, Products_Show_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -89,7 +89,7 @@ func (c *productsClient) Update(ctx context.Context, in *Product, opts ...grpc.C
 	return out, nil
 }
 
-func (c *productsClient) Delete(ctx context.Context, in *EntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *productsClient) Delete(ctx context.Context, in *TenantEntityIndex, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Products_Delete_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -103,15 +103,15 @@ func (c *productsClient) Delete(ctx context.Context, in *EntityIndex, opts ...gr
 // for forward compatibility
 type ProductsServer interface {
 	// List all products, given a page index.
-	Index(context.Context, *PageIndex) (*ProductList, error)
+	Index(context.Context, *TenantPageIndex) (*ProductList, error)
 	// Show a specific product, given its index.
-	Show(context.Context, *EntityIndex) (*Product, error)
+	Show(context.Context, *TenantEntityIndex) (*Product, error)
 	// Include a new product and return it.
 	Store(context.Context, *Product) (*Product, error)
 	// Update a product and return it.
 	Update(context.Context, *Product) (*Product, error)
 	// Delete a product.
-	Delete(context.Context, *EntityIndex) (*emptypb.Empty, error)
+	Delete(context.Context, *TenantEntityIndex) (*emptypb.Empty, error)
 	mustEmbedUnimplementedProductsServer()
 }
 
@@ -119,10 +119,10 @@ type ProductsServer interface {
 type UnimplementedProductsServer struct {
 }
 
-func (UnimplementedProductsServer) Index(context.Context, *PageIndex) (*ProductList, error) {
+func (UnimplementedProductsServer) Index(context.Context, *TenantPageIndex) (*ProductList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Index not implemented")
 }
-func (UnimplementedProductsServer) Show(context.Context, *EntityIndex) (*Product, error) {
+func (UnimplementedProductsServer) Show(context.Context, *TenantEntityIndex) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
 func (UnimplementedProductsServer) Store(context.Context, *Product) (*Product, error) {
@@ -131,7 +131,7 @@ func (UnimplementedProductsServer) Store(context.Context, *Product) (*Product, e
 func (UnimplementedProductsServer) Update(context.Context, *Product) (*Product, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedProductsServer) Delete(context.Context, *EntityIndex) (*emptypb.Empty, error) {
+func (UnimplementedProductsServer) Delete(context.Context, *TenantEntityIndex) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedProductsServer) mustEmbedUnimplementedProductsServer() {}
@@ -148,7 +148,7 @@ func RegisterProductsServer(s grpc.ServiceRegistrar, srv ProductsServer) {
 }
 
 func _Products_Index_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PageIndex)
+	in := new(TenantPageIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -160,13 +160,13 @@ func _Products_Index_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: Products_Index_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductsServer).Index(ctx, req.(*PageIndex))
+		return srv.(ProductsServer).Index(ctx, req.(*TenantPageIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Products_Show_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EntityIndex)
+	in := new(TenantEntityIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -178,7 +178,7 @@ func _Products_Show_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: Products_Show_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductsServer).Show(ctx, req.(*EntityIndex))
+		return srv.(ProductsServer).Show(ctx, req.(*TenantEntityIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,7 +220,7 @@ func _Products_Update_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Products_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EntityIndex)
+	in := new(TenantEntityIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func _Products_Delete_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: Products_Delete_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductsServer).Delete(ctx, req.(*EntityIndex))
+		return srv.(ProductsServer).Delete(ctx, req.(*TenantEntityIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
