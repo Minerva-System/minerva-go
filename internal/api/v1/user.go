@@ -21,6 +21,7 @@ import (
 // @Param     page    query    int    false    "page number (0 or more)"
 // @Success   200     {object}    []model.User
 // @Failure   400     {object}    schema.ErrorMessage
+// @Failure   404     {object}    schema.ErrorMessage
 // @Failure   500     {object}    schema.ErrorMessage
 // @Router    /{company}/users [get]
 func (self *Server) GetUsers(ctx *gin.Context) {
@@ -63,6 +64,7 @@ func (self *Server) GetUsers(ctx *gin.Context) {
 			Status:  500,
 			Message: "Could not parse retrieved user list",
 		})
+		return
 	}
 
 	ctx.JSON(200, res)
@@ -112,6 +114,7 @@ func (self *Server) GetUser(ctx *gin.Context) {
 			Status:  500,
 			Message: "Could not parse retrieved user",
 		})
+		return
 	}
 
 	ctx.JSON(200, res)
@@ -126,6 +129,7 @@ func (self *Server) GetUser(ctx *gin.Context) {
 // @Param     data    body        schema.NewUser    true    "new user data"
 // @Success   201     {object}    model.User
 // @Failure   400     {object}    schema.ErrorMessage
+// @Failure   404     {object}    schema.ErrorMessage
 // @Failure   500     {object}    schema.ErrorMessage
 // @Router    /{company}/users [post]
 func (self *Server) CreateUser(ctx *gin.Context) {
@@ -138,6 +142,7 @@ func (self *Server) CreateUser(ctx *gin.Context) {
 			Status:  400,
 			Message: "Could not parse data into JSON",
 		})
+		return
 	}
 
 	validate := validator.New()
@@ -173,6 +178,7 @@ func (self *Server) CreateUser(ctx *gin.Context) {
 		log.Error("Error while creating user: %v", err)
 		m := schema.ErrorMessage{}.FromGrpcError(err)
 		ctx.JSON(m.Status, m)
+		return
 	}
 
 	ctx.JSON(201, res)

@@ -21,6 +21,7 @@ import (
 // @Param     page    query    int    false    "page number (0 or more)"
 // @Success   200     {object}    []model.Product
 // @Failure   400     {object}    schema.ErrorMessage
+// @Failure   404     {object}    schema.ErrorMessage
 // @Failure   500     {object}    schema.ErrorMessage
 // @Router    /{company}/products [get]
 func (self *Server) GetProducts(ctx *gin.Context) {
@@ -63,6 +64,7 @@ func (self *Server) GetProducts(ctx *gin.Context) {
 			Status:  500,
 			Message: "Could not parse retrieved products list",
 		})
+		return
 	}
 
 	ctx.JSON(200, res)
@@ -112,6 +114,7 @@ func (self *Server) GetProduct(ctx *gin.Context) {
 			Status:  500,
 			Message: "Could not parse retrieved product",
 		})
+		return
 	}
 
 	ctx.JSON(200, res)
@@ -126,6 +129,7 @@ func (self *Server) GetProduct(ctx *gin.Context) {
 // @Param     data    body        schema.NewProduct    true    "new product data"
 // @Success   201     {object}    model.Product
 // @Failure   400     {object}    schema.ErrorMessage
+// @Failure   404     {object}    schema.ErrorMessage
 // @Failure   500     {object}    schema.ErrorMessage
 // @Router    /{company}/products [post]
 func (self *Server) CreateProduct(ctx *gin.Context) {
@@ -137,6 +141,7 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 			Status:  400,
 			Message: "Could not parse data into JSON",
 		})
+		return
 	}
 
 	validate := validator.New()

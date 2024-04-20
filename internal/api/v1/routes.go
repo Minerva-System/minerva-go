@@ -23,18 +23,20 @@ func InstallRoutes(router *gin.Engine, server *Server) {
 	api := router.Group("/api/v1")
 	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// Tenant
+
+	/* Tenant-specific routes */
+	tenant := api.Group("/:company", server.TenantCheckMiddleware())
+
 	// Users
-	api.GET("/:company/users", server.GetUsers)
-	api.GET("/:company/users/:id", server.GetUser)
-	api.POST("/:company/users", server.CreateUser)
-	api.DELETE("/:company/users/:id", server.DeleteUser)
+	tenant.GET("/users", server.GetUsers)
+	tenant.GET("/users/:id", server.GetUser)
+	tenant.POST("/users", server.CreateUser)
+	tenant.DELETE("/users/:id", server.DeleteUser)
 
 	// Products
-	api.GET("/:company/products", server.GetProducts)
-	api.GET("/:company/products/:id", server.GetProduct)
-	api.POST("/:company/products", server.CreateProduct)
-	api.DELETE("/:company/products/:id", server.DeleteProduct)
-
-	// Tenant
-	
+	tenant.GET("/products", server.GetProducts)
+	tenant.GET("/products/:id", server.GetProduct)
+	tenant.POST("/products", server.CreateProduct)
+	tenant.DELETE("/products/:id", server.DeleteProduct)
 }
