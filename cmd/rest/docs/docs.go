@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/products": {
+        "/{company}/products": {
             "get": {
                 "description": "Get a list of products per page",
                 "consumes": [
@@ -38,6 +38,13 @@ const docTemplate = `{
                 ],
                 "summary": "Products list",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "page number (0 or more)",
@@ -83,6 +90,13 @@ const docTemplate = `{
                 "summary": "Create product",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new product data",
                         "name": "data",
                         "in": "body",
@@ -114,7 +128,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/products/{id}": {
+        "/{company}/products/{id}": {
             "get": {
                 "description": "Get data of a specific product",
                 "consumes": [
@@ -128,6 +142,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get product",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "product UUID",
@@ -175,6 +196,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "product UUID",
                         "name": "id",
                         "in": "path",
@@ -200,7 +228,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/{company}/users": {
             "get": {
                 "description": "Get a list of users per page",
                 "consumes": [
@@ -214,6 +242,13 @@ const docTemplate = `{
                 ],
                 "summary": "User list",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "page number (0 or more)",
@@ -259,6 +294,13 @@ const docTemplate = `{
                 "summary": "Create user",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new user data",
                         "name": "data",
                         "in": "body",
@@ -290,7 +332,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/{company}/users/{id}": {
             "get": {
                 "description": "Get data of a specific user",
                 "consumes": [
@@ -304,6 +346,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "user UUID",
@@ -351,6 +400,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "user UUID",
                         "name": "id",
                         "in": "path",
@@ -384,9 +440,6 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
-                "deletedAt": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
@@ -408,9 +461,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
                     "type": "string"
                 },
                 "email": {

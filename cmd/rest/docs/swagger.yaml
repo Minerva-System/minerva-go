@@ -4,8 +4,6 @@ definitions:
     properties:
       createdAt:
         type: string
-      deletedAt:
-        type: string
       description:
         type: string
       id:
@@ -20,8 +18,6 @@ definitions:
   model.User:
     properties:
       createdAt:
-        type: string
-      deletedAt:
         type: string
       email:
         type: string
@@ -87,12 +83,17 @@ info:
   title: Minerva System API
   version: "1.0"
 paths:
-  /products:
+  /{company}/products:
     get:
       consumes:
       - application/json
       description: Get a list of products per page
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: page number (0 or more)
         in: query
         name: page
@@ -122,6 +123,11 @@ paths:
       - application/json
       description: Create a new product
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: new product data
         in: body
         name: data
@@ -146,12 +152,17 @@ paths:
       summary: Create product
       tags:
       - Products
-  /products/{id}:
+  /{company}/products/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a specific product
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: product UUID
         in: path
         name: id
@@ -176,6 +187,11 @@ paths:
       - application/json
       description: Get data of a specific product
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: product UUID
         in: path
         name: id
@@ -203,12 +219,17 @@ paths:
       summary: Get product
       tags:
       - Products
-  /users:
+  /{company}/users:
     get:
       consumes:
       - application/json
       description: Get a list of users per page
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: page number (0 or more)
         in: query
         name: page
@@ -238,6 +259,11 @@ paths:
       - application/json
       description: Create a new user
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: new user data
         in: body
         name: data
@@ -262,12 +288,17 @@ paths:
       summary: Create user
       tags:
       - User
-  /users/{id}:
+  /{company}/users/{id}:
     delete:
       consumes:
       - application/json
       description: Delete a specific user
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: user UUID
         in: path
         name: id
@@ -292,6 +323,11 @@ paths:
       - application/json
       description: Get data of a specific user
       parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
       - description: user UUID
         in: path
         name: id
