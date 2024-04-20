@@ -12,8 +12,8 @@ import (
 )
 
 type Product struct {
-	ID          uuid.UUID       `gorm:"type:uuid;default:UUID()" json:"id"`
-	CompanyID   uuid.UUID       `gorm:"type:uuid;not null" json:"-"`
+	ID          uuid.UUID       `gorm:"type:uuid;default:UUID();primaryKey" json:"id"`
+	CompanyID   uuid.UUID       `gorm:"type:uuid;primaryKey" json:"-"`
 	Description string          `json:"description" gorm:"not null"`
 	Unit        string          `json:"unit" gorm:"type:char(2);not null"`
 	Price       decimal.Decimal `json:"price" gorm:"type:decimal(19,4);not null"`
@@ -27,6 +27,7 @@ func (p *Product) ToMessage() rpc.Product {
 
 	return rpc.Product{
 		Id:          &id,
+		CompanyId:   p.CompanyID.String(),
 		Description: p.Description,
 		Unit:        util.StringToUnit(p.Unit),
 		Price:       p.Price.String(),
@@ -55,6 +56,13 @@ func (Product) FromMessage(p *rpc.Product) (Product, error) {
 		}
 	}
 
+	log.Debug("Parsing company UUID: %s", p.CompanyId)
+	companyId, err := uuid.Parse(p.CompanyId)
+	if err != nil {
+		log.Error("Unable to parse company UUID from gRPC message to Product model: %v", err)
+		return Product{}, err
+	}
+
 	log.Debug("Parsing price: %s", p.Price)
 	price, err := decimal.NewFromString(p.Price)
 	if err != nil {
@@ -64,6 +72,7 @@ func (Product) FromMessage(p *rpc.Product) (Product, error) {
 
 	return Product{
 		ID:          id,
+		CompanyID:   companyId,
 		Description: p.Description,
 		Unit:        util.StringToUnit(p.Unit),
 		Price:       price,
