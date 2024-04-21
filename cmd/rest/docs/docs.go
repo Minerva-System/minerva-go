@@ -550,6 +550,61 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "description": "Update information of a specific product",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Update product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "product UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "product update data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.UpdatedProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Company"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete a specific product",
                 "consumes": [
@@ -989,6 +1044,21 @@ const docTemplate = `{
                 "tradingName": {
                     "type": "string",
                     "maxLength": 255
+                }
+            }
+        },
+        "schema.UpdatedProduct": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "price": {
+                    "type": "number"
+                },
+                "unit": {
+                    "type": "string"
                 }
             }
         }

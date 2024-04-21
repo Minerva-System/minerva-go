@@ -172,8 +172,6 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 	client := rpc.NewProductsClient(conn)
 	msg := data.ToMessage(companyId)
 	response, err := client.Store(ctx, &msg)
-
-	res, err := model.Product{}.FromMessage(response)
 	if err != nil {
 		log.Error("Error while creating product: %v", err)
 		m := schema.ErrorMessage{}.FromGrpcError(err)
@@ -181,10 +179,89 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
+	res, err := model.Product{}.FromMessage(response)
+	if err != nil {
+		log.Error("Could not parse created product: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status:  500,
+			Message: "Could not parse created product",
+		})
+	}
+
 	ctx.JSON(201, res)
 }
 
-// TODO: Update product
+// @Summary Update product
+// @Description Update information of a specific product
+// @Tags Products
+// @Accept json
+// @Param     company    path    string    true    "company UUID"
+// @Param     id         path    string    true    "product UUID"
+// @Param     data       body    schema.UpdatedProduct    true    "product update data"
+// @Success   200     {object}    model.Company
+// @Failure   404     {object}    schema.ErrorMessage
+// @Failure   500     {object}    schema.ErrorMessage
+// @Router    /{company}/products/{id} [put]
+func (self *Server) UpdateProduct(ctx *gin.Context) {
+	id := ctx.Param("id")
+	companyId := ctx.Param("company")
+
+	var data schema.UpdatedProduct
+	if err := ctx.BindJSON(&data); err != nil {
+		log.Error("Could not parse data from JSON")
+		ctx.JSON(400, schema.ErrorMessage{
+			Status:  400,
+			Message: "Could not parse data into JSON",
+		})
+		return
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.Struct(data); err != nil {
+		errors := err.(validator.ValidationErrors)
+		log.Error("Error while validating data: %s", errors)
+		ctx.JSON(400, schema.ErrorMessage{
+			Status:  400,
+			Message: "Error while validating data",
+			Details: errors.Error(),
+		})
+		return
+	}
+
+	log.Debug("Retrieving a products service worker...")
+	conn, err := self.Collection.ProductsSvc.Get(ctx)
+	if err != nil {
+		log.Error("Failed to retrieve a products service worker: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status:  500,
+			Message: "Could not connect to products service",
+		})
+		return
+	}
+	defer conn.Close()
+
+	client := rpc.NewProductsClient(conn)
+	msg := data.ToMessage(companyId, id)
+	response, err := client.Update(ctx, &msg)
+	if err != nil {
+		log.Error("Failed to update product: %v", err)
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
+	}
+
+	res, err := model.Product{}.FromMessage(response)
+	if err != nil {
+		log.Error("Could not parse updated product: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status:  500,
+			Message: "Could not parse updated product",
+		})
+		return
+	}
+
+	ctx.JSON(200, res)
+}
 
 // @Summary Delete product
 // @Description Delete a specific product

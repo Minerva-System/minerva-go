@@ -124,6 +124,16 @@ definitions:
         maxLength: 255
         type: string
     type: object
+  schema.UpdatedProduct:
+    properties:
+      description:
+        maxLength: 200
+        type: string
+      price:
+        type: number
+      unit:
+        type: string
+    type: object
 info:
   contact:
     email: lucasvieira@protonmail.com
@@ -278,6 +288,43 @@ paths:
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
       summary: Get product
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update information of a specific product
+      parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
+      - description: product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: product update data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdatedProduct'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Company'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Update product
       tags:
       - Products
   /{company}/users:
