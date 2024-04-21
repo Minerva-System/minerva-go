@@ -85,9 +85,20 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "parameters": [
+                    {
+                        "description": "new company data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.NewCompany"
+                        }
+                    }
+                ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/model.Company"
                         }
@@ -267,6 +278,15 @@ const docTemplate = `{
                     "Tenant"
                 ],
                 "parameters": [
+                    {
+                        "description": "company update data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.UpdatedCompany"
+                        }
+                    },
                     {
                         "type": "string",
                         "description": "company UUID",
@@ -871,6 +891,31 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.NewCompany": {
+            "type": "object",
+            "required": [
+                "companyName",
+                "slug",
+                "tradingName"
+            ],
+            "properties": {
+                "companyName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 3
+                },
+                "tradingName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                }
+            }
+        },
         "schema.NewProduct": {
             "type": "object",
             "required": [
@@ -913,6 +958,23 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 8
+                }
+            }
+        },
+        "schema.UpdatedCompany": {
+            "type": "object",
+            "properties": {
+                "companyName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "tradingName": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         }

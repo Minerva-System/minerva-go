@@ -59,6 +59,25 @@ definitions:
       status:
         type: integer
     type: object
+  schema.NewCompany:
+    properties:
+      companyName:
+        maxLength: 255
+        minLength: 3
+        type: string
+      slug:
+        maxLength: 30
+        minLength: 3
+        type: string
+      tradingName:
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - companyName
+    - slug
+    - tradingName
+    type: object
   schema.NewProduct:
     properties:
       description:
@@ -90,6 +109,18 @@ definitions:
     - login
     - name
     - password
+    type: object
+  schema.UpdatedCompany:
+    properties:
+      companyName:
+        maxLength: 255
+        type: string
+      slug:
+        maxLength: 30
+        type: string
+      tradingName:
+        maxLength: 255
+        type: string
     type: object
 info:
   contact:
@@ -428,11 +459,18 @@ paths:
     post:
       consumes:
       - application/json
+      parameters:
+      - description: new company data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.NewCompany'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/model.Company'
         "400":
@@ -512,6 +550,12 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: company update data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdatedCompany'
       - description: company UUID
         in: path
         name: id

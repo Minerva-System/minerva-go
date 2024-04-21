@@ -137,14 +137,15 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 
 	var data schema.NewProduct
 	if err := ctx.BindJSON(&data); err != nil {
+		log.Error("Could not parse data from JSON")
 		ctx.JSON(400, schema.ErrorMessage{
 			Status:  400,
-			Message: "Could not parse data into JSON",
+			Message: "Could not parse data from JSON",
 		})
 		return
 	}
 
-	validate := validator.New()
+	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.Struct(data); err != nil {
 		errors := err.(validator.ValidationErrors)
 		log.Error("Error while validating data: %s", errors)
