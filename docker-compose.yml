@@ -119,7 +119,7 @@ services:
   tenant:
     build:
       context: .
-      dockerfile: deploy/Dockerfile
+      dockerfile: _deploy/Dockerfile
       target: minerva_go_tenant
     environment:
       - MINERVA_LOG_LEVEL=debug
