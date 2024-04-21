@@ -13,12 +13,12 @@ import (
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:UUID();primaryKey" json:"id"`
 	CompanyID uuid.UUID `gorm:"type:uuid;primaryKey" json:"-"`
-	Login     string    `json:"login" gorm:"unique"`
-	Name      string    `json:"name" gorm:"not null"`
-	Email     *string   `json:"email,omitempty"`
-	Pwhash    []byte    `json:"-" gorm:"not null"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	Login     string    `gorm:"type:varchar(25);not null;unique" json:"login"`
+	Name      string    `gorm:"type:varchar(100);not null" json:"name"`
+	Email     *string   `gorm:"type:varchar(50)" json:"email,omitempty"`
+	Pwhash    []byte    `gorm:"type:longblob;not null" json:"-"`
+	CreatedAt time.Time `gorm:"not null" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"not null" json:"updatedAt"`
 	Company   Company   `gorm:"foreignKey:CompanyID;references:ID" json:"-"`
 }
 

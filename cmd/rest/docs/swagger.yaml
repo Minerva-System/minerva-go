@@ -81,6 +81,7 @@ definitions:
   schema.NewProduct:
     properties:
       description:
+        maxLength: 200
         type: string
       price:
         type: number
@@ -94,6 +95,7 @@ definitions:
   schema.NewUser:
     properties:
       email:
+        maxLength: 50
         type: string
       login:
         maxLength: 25

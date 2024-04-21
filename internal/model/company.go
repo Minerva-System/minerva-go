@@ -14,11 +14,11 @@ import (
 
 type Company struct {
 	ID          uuid.UUID      `gorm:"type:uuid;default:UUID()" json:"id"`
-	Slug        string         `gorm:"unique" json:"slug"`
-	CompanyName string         `gorm:"not null" json:"companyName"`
-	TradingName string         `gorm:"not null" json:"tradingName"`
-	CreatedAt   time.Time      `json:"createdAt"`
-	UpdatedAt   time.Time      `json:"updatedAt"`
+	Slug        string         `gorm:"type:varchar(30);not null;unique" json:"slug"`
+	CompanyName string         `gorm:"type:varchar(255);not null" json:"companyName"`
+	TradingName string         `gorm:"type:varchar(255);not null" json:"tradingName"`
+	CreatedAt   time.Time      `gorm:"not null" json:"createdAt"`
+	UpdatedAt   time.Time      `gorm:"not null" json:"updatedAt"`
 	DeletedAt   gorm.DeletedAt `json:"-"`
 }
 

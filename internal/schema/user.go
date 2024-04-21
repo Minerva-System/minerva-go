@@ -9,7 +9,7 @@ import (
 type NewUser struct {
 	Login    string `json:"login" validate:"required,min=5,max=25"`
 	Name     string `json:"name" validate:"required,max=100"`
-	Email    string `json:"email" validate:"email"`
+	Email    string `json:"email" validate:"email,max=50"`
 	Password string `json:"password" validate:"required,min=8"`
 }
 

@@ -14,11 +14,11 @@ import (
 type Product struct {
 	ID          uuid.UUID       `gorm:"type:uuid;default:UUID();primaryKey" json:"id"`
 	CompanyID   uuid.UUID       `gorm:"type:uuid;primaryKey" json:"-"`
-	Description string          `json:"description" gorm:"not null"`
-	Unit        string          `json:"unit" gorm:"type:char(2);not null"`
-	Price       decimal.Decimal `json:"price" gorm:"type:decimal(19,4);not null"`
-	CreatedAt   time.Time       `json:"createdAt"`
-	UpdatedAt   time.Time       `json:"updatedAt"`
+	Description string          `gorm:"type:varchar(200);not null" json:"description"`
+	Unit        string          `gorm:"type:char(2);not null" json:"unit"`
+	Price       decimal.Decimal `gorm:"type:decimal(19,4);not null" json:"price"`
+	CreatedAt   time.Time       `gorm:"not null" json:"createdAt"`
+	UpdatedAt   time.Time       `gorm:"not null" json:"updatedAt"`
 	Company     Company         `gorm:"foreignKey:CompanyID;references:ID" json:"-"`
 }
 
