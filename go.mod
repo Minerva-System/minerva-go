@@ -20,7 +20,7 @@ require (
 	github.com/swaggo/swag v1.16.1
 	github.com/wagslane/go-rabbitmq v0.13.0
 	golang.org/x/crypto v0.22.0
-	google.golang.org/grpc v1.55.0
+	google.golang.org/grpc v1.56.3
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/gorm v1.25.7
 )
@@ -74,7 +74,7 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.20.0 // indirect
-	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
+	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/postgres v1.5.2 // indirect
