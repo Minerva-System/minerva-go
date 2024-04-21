@@ -53,10 +53,14 @@ func (self ProductsServerImpl) Store(ctx context.Context, product *rpc.Product) 
 	return controller.CreateProduct(self.conn.DB, product)
 }
 
-func (ProductsServerImpl) Update(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
+func (self ProductsServerImpl) Update(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
 	log.Info("Update method called")
-	// TODO
-	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+
+	if product == nil {
+		log.Error("Update method failed: missing product data")
+		return nil, status.Error(codes.InvalidArgument, "Missing product data")
+	}
+	return controller.UpdateProduct(self.conn.DB, product)
 }
 
 func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.TenantEntityIndex) (*emptypb.Empty, error) {

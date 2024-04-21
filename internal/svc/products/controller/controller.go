@@ -120,5 +120,30 @@ func DeleteProduct(db *gorm.DB, companyId string, id string) error {
 	return nil
 }
 
-// func UpdateProduct(db *gorm.DB, data *rpc.Product) (*rpc.Product, error)
+func UpdateProduct(db *gorm.DB, data *rpc.Product) (*rpc.Product, error) {
+	if data.Id == nil {
+		log.Error("Product id is missing")
+		return nil, status.Error(codes.InvalidArgument, "Product id is missing")
+	}
+
+	if len(data.Unit) > 2 {
+		log.Error("Unit has more than 2 characters")
+		return nil, status.Error(codes.InvalidArgument, "Unit has more than 2 characters")
+	}
+
+	d, err := model.Product{}.FromMessage(data)
+	if err != nil {
+		log.Error("Error mapping product data: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "Error mapping product data: %v", err)
+	}
+
+	result, err := repository.UpdateProduct(db, d)
+	if err != nil {
+		log.Error("Error accessing database: %v", err)
+		return nil, status.Errorf(codes.Internal, "Error accessing database: %v", err)
+	}
+
+	msg := result.ToMessage()
+	return &msg, nil
+}
 

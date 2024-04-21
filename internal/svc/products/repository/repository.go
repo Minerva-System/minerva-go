@@ -48,5 +48,18 @@ func ExistsProduct(db *gorm.DB, companyId uuid.UUID, id uuid.UUID) (bool, error)
 	return exists, result.Error
 }
 
-// func UpdateProduct(db *gorm.DB, data model.Product) (model.Product, error)
+func UpdateProduct(db *gorm.DB, data model.Product) (model.Product, error) {
+	result := db.Model(&data).
+		Updates(model.Product{
+			ID: data.ID,
+			CompanyID: data.CompanyID,
+			Description: data.Description,
+			Unit: data.Unit,
+			Price: data.Price,
+		})
+	if result.Error != nil {
+		return model.Product{}, result.Error
+	}
 
+	return GetProduct(db, data.CompanyID, data.ID)
+}
