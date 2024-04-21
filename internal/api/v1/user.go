@@ -183,7 +183,7 @@ func (self *Server) CreateUser(ctx *gin.Context) {
 	if err != nil {
 		log.Error("Could not parse created user: %v", err)
 		ctx.JSON(500, schema.ErrorMessage{
-			Status: 500,
+			Status:  500,
 			Message: "Could not parse created user",
 		})
 		return
@@ -211,7 +211,7 @@ func (self *Server) UpdateUser(ctx *gin.Context) {
 	if err := ctx.BindJSON(&data); err != nil {
 		log.Error("Could not parse data from JSON")
 		ctx.JSON(400, schema.ErrorMessage{
-			Status: 400,
+			Status:  400,
 			Message: "Could not parse data into JSON",
 		})
 		return
@@ -232,7 +232,7 @@ func (self *Server) UpdateUser(ctx *gin.Context) {
 	if (len(data.Password) > 0) && (len(data.Password) < 8) {
 		log.Error("Error while validating data: Password has less than 8 characters")
 		ctx.JSON(400, schema.ErrorMessage{
-			Status: 400,
+			Status:  400,
 			Message: "Error while validating data",
 			Details: "Password has less than 8 characters",
 		})

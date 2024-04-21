@@ -24,7 +24,7 @@ func (n *NewProduct) ToMessage(companyId string) rpc.Product {
 
 type UpdatedProduct struct {
 	Description string          `json:"description" validate:"max=200"`
-	Unit        string          `json:"unit" validate:"len=2"`
+	Unit        string          `json:"unit" validate:""` // if >0, len=2
 	Price       decimal.Decimal `json:"price" validate:""`
 }
 

@@ -229,6 +229,16 @@ func (self *Server) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 
+	if (len(data.Unit) > 0) && (len(data.Unit) != 2) {
+		log.Error("Error while validating data: Unit must have 2 characters")
+		ctx.JSON(400, schema.ErrorMessage{
+			Status:  400,
+			Message: "Error while validating data",
+			Details: "Unit must have 2 characters",
+		})
+		return
+	}
+
 	log.Debug("Retrieving a products service worker...")
 	conn, err := self.Collection.ProductsSvc.Get(ctx)
 	if err != nil {
