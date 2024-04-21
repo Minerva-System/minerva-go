@@ -13,12 +13,12 @@ PROTO_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%.pb.go,$(PROTO))
 PROTO_GRPC_GEN=$(patsubst $(PROTO_DIR)/%.proto,$(RPC_DIR)/%_grpc.pb.go,$(filter-out $(PROTO_DIR)/messages.proto,$(PROTO)))
 
 # Docker image names
-DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products minerva_go_tenant
+DOCKER_IMGS=minerva_go_rest minerva_go_user minerva_go_session minerva_go_products minerva_go_tenant minerva_go_migrate
 
 # Golang build flags
 export CGO_ENABLED := 0
 
-.PHONY: all clean purge docker
+.PHONY: all clean purge docker gen-migration migrate migrate-docker
 
 all: protobufs modules
 
@@ -83,7 +83,7 @@ $(RPC_DIR)/%_grpc.pb.go: $(PROTO_DIR)/%.proto
 # Generate and push Docker images for AMD64 and ARM64
 minerva_go_%:
 	docker buildx build \
-		-f deploy/Dockerfile \
+		-f _deploy/Dockerfile \
 		--platform=linux/amd64,linux/arm64 \
 		--target $@ \
 		-t luksamuk/$@:latest \
@@ -107,3 +107,20 @@ run-%:
 minerva-up:
 	docker compose up
 
+database-up:
+	docker compose up -d --no-deps mariadb
+
+database-down:
+	docker compose down mariadb
+
+# ============
+
+# Migrations
+
+gen-migration:
+	atlas migrate diff --env gorm
+
+migrate:
+	atlas migrate apply --url "maria://mysql:mysql@localhost:3306/minerva"
+migrate-k8s:
+	kubectl apply -n minerva-system -f _deploy/k8s/jobs.yml

@@ -8,7 +8,7 @@ import (
 )
 
 type NewProduct struct {
-	Description string          `json:"description" validate:"required"`
+	Description string          `json:"description" validate:"required,max=200"`
 	Unit        string          `json:"unit" validate:"required,len=2"`
 	Price       decimal.Decimal `json:"price" validate:"required"`
 }

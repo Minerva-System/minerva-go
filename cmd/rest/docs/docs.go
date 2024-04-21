@@ -937,7 +937,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 200
                 },
                 "price": {
                     "type": "number"
@@ -956,7 +957,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
                 },
                 "login": {
                     "type": "string",
