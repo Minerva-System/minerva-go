@@ -134,6 +134,18 @@ definitions:
       unit:
         type: string
     type: object
+  schema.UpdatedUser:
+    properties:
+      email:
+        maxLength: 50
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      password:
+        description: if >0, validate min=8
+        type: string
+    type: object
 info:
   contact:
     email: lucasvieira@protonmail.com
@@ -316,6 +328,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Company'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
         "404":
           description: Not Found
           schema:
@@ -469,6 +485,43 @@ paths:
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
       summary: Get user
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update information of a specific user
+      parameters:
+      - description: company UUID
+        in: path
+        name: company
+        required: true
+        type: string
+      - description: user UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user update data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdatedUser'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schema.ErrorMessage'
+      summary: Update user
       tags:
       - User
   /companies:

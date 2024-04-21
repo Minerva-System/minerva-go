@@ -39,6 +39,7 @@ func InstallRoutes(router *gin.Engine, server *Server) {
 	tenant.GET("/users", server.GetUsers)
 	tenant.GET("/users/:id", server.GetUser)
 	tenant.POST("/users", server.CreateUser)
+	tenant.PUT("/users/:id", server.UpdateUser)
 	tenant.DELETE("/users/:id", server.DeleteUser)
 
 	// Products

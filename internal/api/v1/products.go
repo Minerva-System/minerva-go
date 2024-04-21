@@ -199,6 +199,7 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 // @Param     id         path    string    true    "product UUID"
 // @Param     data       body    schema.UpdatedProduct    true    "product update data"
 // @Success   200     {object}    model.Company
+// @Failure   400     {object}    schema.ErrorMessage
 // @Failure   404     {object}    schema.ErrorMessage
 // @Failure   500     {object}    schema.ErrorMessage
 // @Router    /{company}/products/{id} [put]
