@@ -121,7 +121,6 @@ gen-migration:
 	atlas migrate diff --env gorm
 
 migrate:
-	atlas migrate apply \
-		--url "maria://mysql:mysql@localhost:3306/minerva"
+	atlas migrate apply --url "maria://mysql:mysql@localhost:3306/minerva"
 migrate-k8s:
 	kubectl apply -n minerva-system -f _deploy/k8s/jobs.yml
