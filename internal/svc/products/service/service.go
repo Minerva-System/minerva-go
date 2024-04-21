@@ -20,7 +20,7 @@ type ProductsServerImpl struct {
 	conn connection.Collection
 }
 
-func (self ProductsServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*rpc.ProductList, error) {
+func (self ProductsServerImpl) Index(ctx context.Context, idx *rpc.TenantPageIndex) (*rpc.ProductList, error) {
 	log.Info("Index method called")
 
 	if (idx == nil) || (idx.Index == nil) {
@@ -28,10 +28,10 @@ func (self ProductsServerImpl) Index(ctx context.Context, idx *rpc.PageIndex) (*
 		return nil, status.Error(codes.InvalidArgument, "Missing page index parameter")
 	}
 
-	return controller.ProductsIndex(self.conn.DB, *idx.Index)
+	return controller.ProductsIndex(self.conn.DB, idx.CompanyId, *idx.Index)
 }
 
-func (self ProductsServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (*rpc.Product, error) {
+func (self ProductsServerImpl) Show(ctx context.Context, idx *rpc.TenantEntityIndex) (*rpc.Product, error) {
 	log.Info("Show method called")
 
 	if idx == nil {
@@ -39,7 +39,7 @@ func (self ProductsServerImpl) Show(ctx context.Context, idx *rpc.EntityIndex) (
 		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
 	}
 
-	return controller.GetProduct(self.conn.DB, idx.Index)
+	return controller.GetProduct(self.conn.DB, idx.CompanyId, idx.Index)
 }
 
 func (self ProductsServerImpl) Store(ctx context.Context, product *rpc.Product) (*rpc.Product, error) {
@@ -59,7 +59,7 @@ func (ProductsServerImpl) Update(ctx context.Context, product *rpc.Product) (*rp
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 
-func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex) (*emptypb.Empty, error) {
+func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.TenantEntityIndex) (*emptypb.Empty, error) {
 	log.Info("Delete method called")
 
 	if idx == nil {
@@ -67,7 +67,7 @@ func (self ProductsServerImpl) Delete(ctx context.Context, idx *rpc.EntityIndex)
 		return nil, status.Error(codes.InvalidArgument, "Missing id parameter")
 	}
 
-	return &emptypb.Empty{}, controller.DeleteProduct(self.conn.DB, idx.Index)
+	return &emptypb.Empty{}, controller.DeleteProduct(self.conn.DB, idx.CompanyId, idx.Index)
 }
 
 func CreateServer() *grpc.Server {

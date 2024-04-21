@@ -62,3 +62,12 @@ FROM runner AS minerva_go_products
 EXPOSE 9012
 COPY --from=builder_products /minerva/bin/products ./minerva-products
 CMD ["./minerva-products"]
+
+
+# TENANT service
+FROM builder as builder_tenant
+RUN make bin/tenant
+FROM runner AS minerva_go_tenant
+EXPOSE 9013
+COPY --from=builder_tenant /minerva/bin/tenant ./minerva-tenant
+CMD ["./minerva-tenant"]

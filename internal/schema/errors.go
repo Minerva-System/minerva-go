@@ -22,21 +22,27 @@ func (ErrorMessage) FromGrpcError(err error) ErrorMessage {
 		case codes.AlreadyExists:
 			httpstatus = http.StatusConflict
 			message = "Entity already exists"
+			details = s.Message()
 		case codes.PermissionDenied:
 			httpstatus = http.StatusForbidden
 			message = "You do not have permission to access this resource."
+			details = s.Message()
 		case codes.InvalidArgument:
 			httpstatus = http.StatusBadRequest
 			message = "The service did not receive valid information."
+			details = s.Message()
 		case codes.OutOfRange:
 			httpstatus = http.StatusBadRequest
 			message = "The service received a request for a resource that is out of range."
+			details = s.Message()
 		case codes.Internal:
 			httpstatus = http.StatusInternalServerError
 			message = "There was an error on the service while processing your request."
+			details = s.Message()
 		case codes.NotFound:
 			httpstatus = http.StatusNotFound
 			message = "Fetched entity was not found"
+			details = s.Message()
 		}
 	} else {
 		message = "Unknown error while processing request"

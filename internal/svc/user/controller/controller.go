@@ -18,13 +18,19 @@ import (
 const PAGESIZE = 100
 
 
-func UserIndex(db *gorm.DB, page int64) (*rpc.UserList, error) {
+func UserIndex(db *gorm.DB, companyId string, page int64) (*rpc.UserList, error) {
 	if page < 0 {
-		log.Error("User controller: Invalid page index: %d", page)
+		log.Error("Invalid page index: %d", page)
 		return nil, status.Error(codes.OutOfRange, "Invalid user list page")
 	}
 
-	list, err := repository.ListUsers(db, int(page) * PAGESIZE, PAGESIZE)
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return nil, status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
+	}
+
+	list, err := repository.ListUsers(db, parsedCompanyId, int(page) * PAGESIZE, PAGESIZE)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return nil, status.Errorf(codes.Internal, "Error acessing database: %v", err)
@@ -33,14 +39,20 @@ func UserIndex(db *gorm.DB, page int64) (*rpc.UserList, error) {
 	return model.User{}.ListToMessage(list), nil
 }
 
-func GetUser(db *gorm.DB, id string) (*rpc.User, error) {
+func GetUser(db *gorm.DB, companyId string, id string) (*rpc.User, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		log.Error("UUID is invalid: \"%s\"", id)
 		return nil, status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
 	}
+
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return nil, status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
+	}
 	
-	usr, err := repository.GetUser(db, parsedId)
+	usr, err := repository.GetUser(db, parsedCompanyId, parsedId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Error("User %s not found", id)
@@ -89,14 +101,20 @@ func CreateUser(db *gorm.DB, data *rpc.User) (*rpc.User, error) {
 	return &msg, nil
 }
 
-func DeleteUser(db *gorm.DB, id string) error {
+func DeleteUser(db *gorm.DB, companyId string, id string) error {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		log.Error("UUID is invalid: \"%s\"", id)
 		return status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
 	}
 
-	exists, err := repository.ExistsUser(db, parsedId)
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
+	}
+
+	exists, err := repository.ExistsUser(db, parsedCompanyId, parsedId)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)
@@ -107,7 +125,7 @@ func DeleteUser(db *gorm.DB, id string) error {
 		return status.Error(codes.NotFound, "User not found")
 	}
 	
-	err = repository.DeleteUser(db, parsedId)
+	err = repository.DeleteUser(db, parsedCompanyId, parsedId)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)

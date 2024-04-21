@@ -73,6 +73,7 @@ Possible names for `MODULENAME`:
 - `minerva_go_user` (gRPC, runs on port 9010);
 - `minerva_go_session` (gRPC, runs on port 9011);
 - `minerva_go_products` (gRPC, runs on port 9012).
+- `minerva_go_tenant` (gRPC, runs on port 9013).
 
 #### Cross-platform build
 

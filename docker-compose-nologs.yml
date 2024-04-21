@@ -3,7 +3,7 @@ services:
   rest:
     build:
       context: .
-      dockerfile: _deploy/Dockerfile
+      dockerfile: deploy/Dockerfile
       target: minerva_go_rest
     environment:
       - GIN_MODE=release
@@ -21,18 +21,11 @@ services:
         condition: service_started
       products:
         condition: service_started
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: rest
 
   user:
     build:
       context: .
-      dockerfile: _deploy/Dockerfile
+      dockerfile: deploy/Dockerfile
       target: minerva_go_user
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -50,18 +43,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: user
 
   session:
     build:
       context: .
-      dockerfile: _deploy/Dockerfile
+      dockerfile: deploy/Dockerfile
       target: minerva_go_session
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -79,18 +65,11 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: session
 
   products:
     build:
       context: .
-      dockerfile: _deploy/Dockerfile
+      dockerfile: deploy/Dockerfile
       target: minerva_go_products
     environment:
       - MINERVA_LOG_LEVEL=debug
@@ -108,13 +87,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: products
 
   tenant:
     build:
@@ -137,13 +109,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        
+
         
 # =========================================
         
@@ -161,7 +127,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./_deploy/compose-data/database:/var/lib/mysql
+      - ./deploy/compose-data/database:/var/lib/mysql
     healthcheck:
       interval: 30s
       retries: 50
@@ -182,69 +148,12 @@ services:
       - 15672:15672
       - 15692:15692
     volumes:
-      - ./_deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-      - ./_deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
-      - ./_deploy/compose-data/broker:/var/lib/rabbitmq
+      - ./deploy/compose-config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./deploy/compose-config/rabbitmq/10-defaults.conf:/etc/rabbitmq/conf.d/10-defaults.conf:ro
+      - ./deploy/compose-data/broker:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
       timeout: 30s
       retries: 50
 
-  fluentd:
-    build: ./_deploy/compose-config/fluentd
-    volumes:
-      - ./_deploy/compose-config/fluentd/config:/fluentd/etc
-    links:
-      - elasticsearch
-    ports:
-      - 24224:24224
-      - 24224:24224/udp
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-
-  elasticsearch:
-    image: elasticsearch:8.12.2
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
-      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
-      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m
-    expose:
-      - 9200
-    ports:
-      - 9200:9200
-    volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 30s
-      retries: 50
-
-  kibana:
-    image: kibana:8.12.2
-    environment:
-      - xpack.security.enabled=false
-      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
-      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
-      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-    links:
-      - elasticsearch
-    ports:
-      - 5601:5601
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-
-volumes:
-  elasticsearch:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './_deploy/compose-data/elasticsearch'

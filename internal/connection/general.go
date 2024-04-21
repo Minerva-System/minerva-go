@@ -14,6 +14,7 @@ type CollectionOptions struct {
 	WithUserService bool
 	WithSessionService bool
 	WithProductsService bool
+	WithTenantService bool
 }
 
 type Collection struct {
@@ -22,6 +23,7 @@ type Collection struct {
 	UserSvc *grpcpool.Pool
 	SessionSvc *grpcpool.Pool
 	ProductsSvc *grpcpool.Pool
+	TenantSvc *grpcpool.Pool
 }
 
 func NewCollection(options CollectionOptions) (Collection, error) {
@@ -71,6 +73,15 @@ func NewCollection(options CollectionOptions) (Collection, error) {
 		col.ProductsSvc, err = newGrpcClientPool(GrpcClientKindProducts)
 		if err != nil {
 			log.Error("Error while creating products service pool: %v", err)
+			return Collection{}, err
+		}
+	}
+
+	if(options.WithTenantService) {
+		log.Info("Connecting to tenant service...")
+		col.TenantSvc, err = newGrpcClientPool(GrpcClientKindTenant)
+		if err != nil {
+			log.Error("Error while creating tenant service pool: %v", err)
 			return Collection{}, err
 		}
 	}

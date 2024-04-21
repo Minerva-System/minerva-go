@@ -24,7 +24,361 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/products": {
+        "/companies": {
+            "get": {
+                "description": "Get a list of companies per page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Company list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page number (0 or more)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Company"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Create company",
+                "parameters": [
+                    {
+                        "description": "new company data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.NewCompany"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.Company"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/by-slug/{slug}": {
+            "get": {
+                "description": "Get data of a specific company by unique identifier (slug)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Get company by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Company"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/exists": {
+            "get": {
+                "description": "Check whether a specific company exists",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Check company existence",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schema.BooleanResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/{id}": {
+            "get": {
+                "description": "Get data of a specific company by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Get company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Company"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update information of a specific company",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Update company",
+                "parameters": [
+                    {
+                        "description": "company update data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schema.UpdatedCompany"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Company"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a specific company (disabling is a soft-delete).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Disable company",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "disabled successfully"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/{company}/products": {
             "get": {
                 "description": "Get a list of products per page",
                 "consumes": [
@@ -38,6 +392,13 @@ const docTemplate = `{
                 ],
                 "summary": "Products list",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "page number (0 or more)",
@@ -57,6 +418,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/schema.ErrorMessage"
                         }
@@ -83,6 +450,13 @@ const docTemplate = `{
                 "summary": "Create product",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new product data",
                         "name": "data",
                         "in": "body",
@@ -105,6 +479,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/schema.ErrorMessage"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -114,7 +494,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/products/{id}": {
+        "/{company}/products/{id}": {
             "get": {
                 "description": "Get data of a specific product",
                 "consumes": [
@@ -128,6 +508,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get product",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "product UUID",
@@ -175,6 +562,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "product UUID",
                         "name": "id",
                         "in": "path",
@@ -200,7 +594,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/{company}/users": {
             "get": {
                 "description": "Get a list of users per page",
                 "consumes": [
@@ -214,6 +608,13 @@ const docTemplate = `{
                 ],
                 "summary": "User list",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "page number (0 or more)",
@@ -233,6 +634,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/schema.ErrorMessage"
                         }
@@ -259,6 +666,13 @@ const docTemplate = `{
                 "summary": "Create user",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "new user data",
                         "name": "data",
                         "in": "body",
@@ -281,6 +695,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/schema.ErrorMessage"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/schema.ErrorMessage"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -290,7 +710,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/{company}/users/{id}": {
             "get": {
                 "description": "Get data of a specific user",
                 "consumes": [
@@ -304,6 +724,13 @@ const docTemplate = `{
                 ],
                 "summary": "Get user",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "user UUID",
@@ -351,6 +778,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "company UUID",
+                        "name": "company",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "user UUID",
                         "name": "id",
                         "in": "path",
@@ -378,13 +812,33 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.Company": {
+            "type": "object",
+            "properties": {
+                "companyName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "tradingName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Product": {
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
                     "type": "string"
                 },
                 "description": {
@@ -410,9 +864,6 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
-                "deletedAt": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
@@ -430,6 +881,14 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.BooleanResponse": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.ErrorMessage": {
             "type": "object",
             "properties": {
@@ -441,6 +900,31 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "schema.NewCompany": {
+            "type": "object",
+            "required": [
+                "companyName",
+                "slug",
+                "tradingName"
+            ],
+            "properties": {
+                "companyName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 3
+                },
+                "tradingName": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
                 }
             }
         },
@@ -486,6 +970,23 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 8
+                }
+            }
+        },
+        "schema.UpdatedCompany": {
+            "type": "object",
+            "properties": {
+                "companyName": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "slug": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "tradingName": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         }
