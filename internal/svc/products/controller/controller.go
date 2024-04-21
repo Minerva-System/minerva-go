@@ -16,13 +16,19 @@ import (
 
 const PAGESIZE = 100
 
-func ProductsIndex(db *gorm.DB, page int64) (*rpc.ProductList, error) {
+func ProductsIndex(db *gorm.DB, companyId string, page int64) (*rpc.ProductList, error) {
 	if page < 0 {
 		log.Error("Invalid page index: %d", page)
 		return nil, status.Error(codes.OutOfRange, "Invalid product list page")
 	}
 
-	list, err := repository.ListProducts(db, int(page) * PAGESIZE, PAGESIZE)
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return nil, status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
+	}
+
+	list, err := repository.ListProducts(db, parsedCompanyId, int(page) * PAGESIZE, PAGESIZE)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return nil, status.Errorf(codes.Internal, "Error accessing database: %v", err)
@@ -31,14 +37,20 @@ func ProductsIndex(db *gorm.DB, page int64) (*rpc.ProductList, error) {
 	return model.Product{}.ListToMessage(list), nil
 }
 
-func GetProduct(db *gorm.DB, id string) (*rpc.Product, error) {
+func GetProduct(db *gorm.DB, companyId string, id string) (*rpc.Product, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		log.Error("UUID is invalid: \"%s\"", id)
-		return nil, status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
+		return nil, status.Error(codes.InvalidArgument, "Index parameter has an invalid UUID")
+	}
+
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return nil, status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
 	}
 	
-	prd, err := repository.GetProduct(db, parsedId)
+	prd, err := repository.GetProduct(db, parsedCompanyId, parsedId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Error("Product %s not found", id)
@@ -76,14 +88,20 @@ func CreateProduct(db *gorm.DB, data *rpc.Product) (*rpc.Product, error) {
 	return &msg, nil
 }
 
-func DeleteProduct(db *gorm.DB, id string) error {
+func DeleteProduct(db *gorm.DB, companyId string, id string) error {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		log.Error("UUID is invalid: \"%s\"", id)
-		return status.Error(codes.InvalidArgument, "Index parameter is an invalid UUID")
+		return status.Error(codes.InvalidArgument, "Index parameter has an invalid UUID")
 	}
 
-	exists, err := repository.ExistsProduct(db, parsedId)
+	parsedCompanyId, err := uuid.Parse(companyId)
+	if err != nil {
+		log.Error("Company UUID is invalid: \"%s\"", companyId)
+		return status.Error(codes.InvalidArgument, "Index parameter has an invalid company UUID")
+	}
+
+	exists, err := repository.ExistsProduct(db, parsedCompanyId, parsedId)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)
@@ -94,7 +112,7 @@ func DeleteProduct(db *gorm.DB, id string) error {
 		return status.Error(codes.NotFound, "Product not found")
 	}
 	
-	err = repository.DeleteProduct(db, parsedId)
+	err = repository.DeleteProduct(db, parsedCompanyId, parsedId)
 	if err != nil {
 		log.Error("Error accessing database: %v", err)
 		return status.Errorf(codes.Internal, "Error accessing database: %v", err)

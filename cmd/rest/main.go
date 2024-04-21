@@ -28,6 +28,7 @@ func main() {
 		WithUserService: true,
 		WithSessionService: true,
 		WithProductsService: true,
+		WithTenantService: true,
 	})
 	if err != nil {
 		log.Fatal("Failed to establish connections: %v", err)

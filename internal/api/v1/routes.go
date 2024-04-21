@@ -23,15 +23,27 @@ func InstallRoutes(router *gin.Engine, server *Server) {
 	api := router.Group("/api/v1")
 	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// Tenant
+	api.GET("/companies", server.GetCompanies)
+	api.GET("/companies/:id", server.GetCompany)
+	api.GET("/companies/by-slug/:slug", server.GetCompanyBySlug)
+	api.GET("/companies/exists", server.GetCompanyExists)
+	api.POST("/companies", server.CreateCompany)
+	api.PUT("/companies/:id", server.UpdateCompany)
+	api.DELETE("/companies/:id", server.DisableCompany)
+
+	/* Tenant-specific routes */
+	tenant := api.Group("/:company", server.TenantCheckMiddleware())
+
 	// Users
-	api.GET("/users", server.GetUsers)
-	api.GET("/users/:id", server.GetUser)
-	api.POST("/users", server.CreateUser)
-	api.DELETE("/users/:id", server.DeleteUser)
+	tenant.GET("/users", server.GetUsers)
+	tenant.GET("/users/:id", server.GetUser)
+	tenant.POST("/users", server.CreateUser)
+	tenant.DELETE("/users/:id", server.DeleteUser)
 
 	// Products
-	api.GET("/products", server.GetProducts)
-	api.GET("/products/:id", server.GetProduct)
-	api.POST("/products", server.CreateProduct)
-	api.DELETE("/products/:id", server.DeleteProduct)
+	tenant.GET("/products", server.GetProducts)
+	tenant.GET("/products/:id", server.GetProduct)
+	tenant.POST("/products", server.CreateProduct)
+	tenant.DELETE("/products/:id", server.DeleteProduct)
 }
