@@ -259,12 +259,20 @@ func (self *Server) CreateCompany(ctx *gin.Context) {
 	client := rpc.NewTenantClient(conn)
 	msg := data.ToMessage()
 	response, err := client.Store(ctx, &msg)
+	if err != nil {
+		log.Error("Failed to create company: %v", err)
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
+	}
 
 	res, err := model.Company{}.FromMessage(response)
 	if err != nil {
-		log.Error("Error while creating product: %v", err)
-		m := schema.ErrorMessage{}.FromGrpcError(err)
-		ctx.JSON(m.Status, m)
+		log.Error("Could not parse created company: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status: 500,
+			Message: "Could not parse created company",
+		})
 		return
 	}
 
@@ -353,12 +361,20 @@ func (self *Server) UpdateCompany(ctx *gin.Context) {
 	client := rpc.NewTenantClient(conn)
 	msg := data.ToMessage(id)
 	response, err := client.Update(ctx, &msg)
+	if err != nil {
+		log.Error("Failed to update company: %v", err)
+		m := schema.ErrorMessage{}.FromGrpcError(err)
+		ctx.JSON(m.Status, m)
+		return
+	}
 
 	res, err := model.Company{}.FromMessage(response)
 	if err != nil {
-		log.Error("Error while updating company %s: %v", id, err)
-		m := schema.ErrorMessage{}.FromGrpcError(err)
-		ctx.JSON(m.Status, m)
+		log.Error("Could not parse updated company: %v", err)
+		ctx.JSON(500, schema.ErrorMessage{
+			Status: 500,
+			Message: "Could not parse updated company",
+		})
 		return
 	}
 

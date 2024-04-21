@@ -21,3 +21,19 @@ func (n *NewProduct) ToMessage(companyId string) rpc.Product {
 		Price:       n.Price.String(),
 	}
 }
+
+type UpdatedProduct struct {
+	Description string          `json:"description" validate:"max=200"`
+	Unit        string          `json:"unit" validate:""`
+	Price       decimal.Decimal `json:"price" validate:""`
+}
+
+func (n *UpdatedProduct) ToMessage(companyId string, id string) rpc.Product {
+	return rpc.Product{
+		Id:          &id,
+		CompanyId:   companyId,
+		Description: n.Description,
+		Unit:        n.Unit,
+		Price:       n.Price.String(),
+	}
+}
