@@ -143,7 +143,6 @@ definitions:
         maxLength: 100
         type: string
       password:
-        description: if >0, validate min=8
         type: string
     type: object
 info:

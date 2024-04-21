@@ -31,7 +31,7 @@ func (n *NewUser) ToMessage(companyId string) rpc.User {
 type UpdatedUser struct {
 	Name string `json:"name" validate:"max=100"`
 	Email string `json:"email" validate:"email,max=50"`
-	Password string `json:"password" validate:""` // if >0, validate min=8
+	Password string `json:"password" validate:""`
 }
 
 func (n *UpdatedUser) ToMessage(companyId string, id string) rpc.User {

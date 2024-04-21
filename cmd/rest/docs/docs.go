@@ -1135,7 +1135,6 @@ const docTemplate = `{
                     "maxLength": 100
                 },
                 "password": {
-                    "description": "if \u003e0, validate min=8",
                     "type": "string"
                 }
             }
