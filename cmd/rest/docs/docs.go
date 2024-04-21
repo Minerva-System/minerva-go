@@ -76,6 +76,7 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "description": "Create a new company",
                 "consumes": [
                     "application/json"
                 ],
@@ -85,6 +86,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Create company",
                 "parameters": [
                     {
                         "description": "new company data",
@@ -126,6 +128,7 @@ const docTemplate = `{
         },
         "/companies/by-slug/{slug}": {
             "get": {
+                "description": "Get data of a specific company by unique identifier (slug)",
                 "consumes": [
                     "application/json"
                 ],
@@ -135,6 +138,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Get company by slug",
                 "parameters": [
                     {
                         "type": "string",
@@ -174,6 +178,7 @@ const docTemplate = `{
         },
         "/companies/exists": {
             "get": {
+                "description": "Check whether a specific company exists",
                 "consumes": [
                     "application/json"
                 ],
@@ -183,6 +188,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Check company existence",
                 "parameters": [
                     {
                         "type": "string",
@@ -222,6 +228,7 @@ const docTemplate = `{
         },
         "/companies/{id}": {
             "get": {
+                "description": "Get data of a specific company by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -231,6 +238,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Get company",
                 "parameters": [
                     {
                         "type": "string",
@@ -268,6 +276,7 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "description": "Update information of a specific company",
                 "consumes": [
                     "application/json"
                 ],
@@ -277,6 +286,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Update company",
                 "parameters": [
                     {
                         "description": "company update data",
@@ -323,6 +333,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "description": "Delete a specific company (disabling is a soft-delete).",
                 "consumes": [
                     "application/json"
                 ],
@@ -332,6 +343,7 @@ const docTemplate = `{
                 "tags": [
                     "Tenant"
                 ],
+                "summary": "Disable company",
                 "parameters": [
                     {
                         "type": "string",

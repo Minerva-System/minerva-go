@@ -184,6 +184,8 @@ func (self *Server) CreateProduct(ctx *gin.Context) {
 	ctx.JSON(201, res)
 }
 
+// TODO: Update product
+
 // @Summary Delete product
 // @Description Delete a specific product
 // @Tags      Products

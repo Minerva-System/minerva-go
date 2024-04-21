@@ -68,8 +68,8 @@ func (self *Server) GetCompanies(ctx *gin.Context) {
 	ctx.JSON(200, res)
 }
 
-// @Summary
-// @Description
+// @Summary Get company
+// @Description Get data of a specific company by id
 // @Tags Tenant
 // @Accept    json
 // @Produce   json
@@ -116,8 +116,8 @@ func (self *Server) GetCompany(ctx *gin.Context) {
 	ctx.JSON(200, res)
 }
 
-// @Summary
-// @Description
+// @Summary Get company by slug
+// @Description Get data of a specific company by unique identifier (slug)
 // @Tags Tenant
 // @Accept    json
 // @Produce   json
@@ -164,8 +164,8 @@ func (self *Server) GetCompanyBySlug(ctx *gin.Context) {
 	ctx.JSON(200, res)
 }
 
-// @Summary
-// @Description
+// @Summary Check company existence
+// @Description Check whether a specific company exists
 // @Tags Tenant
 // @Accept    json
 // @Produce   json
@@ -210,8 +210,8 @@ func (self *Server) GetCompanyExists(ctx *gin.Context) {
 	ctx.JSON(200, schema.BooleanResponse{}.FromMessage(response))
 }
 
-// @Summary
-// @Description
+// @Summary Create company
+// @Description Create a new company
 // @Tags Tenant
 // @Accept    json
 // @Produce   json
@@ -271,8 +271,8 @@ func (self *Server) CreateCompany(ctx *gin.Context) {
 	ctx.JSON(201, res)
 }
 
-// @Summary
-// @Description
+// @Summary Update company
+// @Description Update information of a specific company
 // @Tags Tenant
 // @Accept    json
 // @Produce   json
@@ -365,8 +365,8 @@ func (self *Server) UpdateCompany(ctx *gin.Context) {
 	ctx.JSON(200, res)
 }
 
-// @Summary
-// @Description
+// @Summary Disable company
+// @Description Delete a specific company (disabling is a soft-delete).
 // @Tags Tenant
 // @Accept    json
 // @Produce   json

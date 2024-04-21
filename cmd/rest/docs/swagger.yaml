@@ -459,6 +459,7 @@ paths:
     post:
       consumes:
       - application/json
+      description: Create a new company
       parameters:
       - description: new company data
         in: body
@@ -485,12 +486,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Create company
       tags:
       - Tenant
   /companies/{id}:
     delete:
       consumes:
       - application/json
+      description: Delete a specific company (disabling is a soft-delete).
       parameters:
       - description: company UUID
         in: path
@@ -514,11 +517,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Disable company
       tags:
       - Tenant
     get:
       consumes:
       - application/json
+      description: Get data of a specific company by id
       parameters:
       - description: company UUID
         in: path
@@ -544,11 +549,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Get company
       tags:
       - Tenant
     put:
       consumes:
       - application/json
+      description: Update information of a specific company
       parameters:
       - description: company update data
         in: body
@@ -580,12 +587,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Update company
       tags:
       - Tenant
   /companies/by-slug/{slug}:
     get:
       consumes:
       - application/json
+      description: Get data of a specific company by unique identifier (slug)
       parameters:
       - description: company slug
         in: path
@@ -611,12 +620,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Get company by slug
       tags:
       - Tenant
   /companies/exists:
     get:
       consumes:
       - application/json
+      description: Check whether a specific company exists
       parameters:
       - description: company UUID
         in: query
@@ -642,6 +653,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/schema.ErrorMessage'
+      summary: Check company existence
       tags:
       - Tenant
 swagger: "2.0"
