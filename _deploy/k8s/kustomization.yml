@@ -9,6 +9,7 @@ resources:
   - volumes.yml
   - services.yml
   - mariadb.yml
+  - extra/phpmyadmin.yml
   - rabbitmq.yml
   - deployments.yml
   - autoscalers.yml
