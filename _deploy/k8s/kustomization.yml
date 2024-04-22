@@ -10,8 +10,6 @@ resources:
   - services.yml
   - mariadb.yml
   - rabbitmq.yml
-  - elastic.yml
-  - fluentd.yml
   - deployments.yml
   - autoscalers.yml
 ---
