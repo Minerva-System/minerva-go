@@ -1298,13 +1298,13 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Logs dashboard",
   "uid": "adjgo1dfkh14wd",
-  "version": 7,
+  "version": 10,
   "weekStart": ""
 }

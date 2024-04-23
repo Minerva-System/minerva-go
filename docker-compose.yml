@@ -205,5 +205,6 @@ services:
       - 3000:3000
     volumes:
       - ./_deploy/compose-config/grafana/ds.yml:/etc/grafana/provisioning/datasources/ds.yaml:ro
-
+      - ./_deploy/compose-config/grafana/dashboard_examples/logs_dashboard.json:/var/lib/grafana/dashboards/minerva/logs.json:ro
+      - ./_deploy/compose-config/grafana/dashboard_examples/default.yaml:/etc/grafana/provisioning/dashboards/default.yaml:ro
 
