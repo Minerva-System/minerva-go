@@ -21,13 +21,9 @@ services:
         condition: service_started
       products:
         condition: service_started
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: rest
+    labels:
+      logging: "promtail"
+      logging_jobname: "rest"
 
   user:
     build:
@@ -50,13 +46,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: user
+    labels:
+      logging: "promtail"
+      logging_jobname: "user"
 
   session:
     build:
@@ -79,13 +71,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: session
+    labels:
+      logging: "promtail"
+      logging_jobname: "session"
 
   products:
     build:
@@ -108,13 +96,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: products
+    labels:
+      logging: "promtail"
+      logging_jobname: "products"
 
   tenant:
     build:
@@ -137,13 +121,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      fluentd:
-        condition: service_started
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        
+    labels:
+      logging: "promtail"
+      logging_jobname: "tenant"
+
         
 # =========================================
         
@@ -174,6 +155,9 @@ services:
           "--innodb_initialized"
         ]
       timeout: 30s
+    labels:
+      logging: "promtail"
+      logging_jobname: "mariadb"
     
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
@@ -190,61 +174,37 @@ services:
       interval: 30s
       timeout: 30s
       retries: 50
+    labels:
+      logging: "promtail"
+      logging_jobname: "rabbitmq"
 
-  fluentd:
-    build: ./_deploy/compose-config/fluentd
+# =========================================
+
+  loki:
+    image: grafana/loki:2.9.7
+    ports:
+      - 3100:3100
+      - 9096:9096
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.7
     volumes:
-      - ./_deploy/compose-config/fluentd/config:/fluentd/etc
-    links:
-      - elasticsearch
-    ports:
-      - 24224:24224
-      - 24224:24224/udp
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
+      - ./_deploy/compose-config/promtail/promtail-config.yml:/etc/promtail/promtail-config.yaml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/promtail-config.yaml
 
-  elasticsearch:
-    image: elasticsearch:8.12.2
-    container_name: elasticsearch
+  grafana:
+    image: grafana/grafana:latest
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
-      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
-      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m
-    expose:
-      - 9200
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     ports:
-      - 9200:9200
+      - 3000:3000
     volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 30s
-      retries: 50
+      - ./_deploy/compose-config/grafana/ds.yml:/etc/grafana/provisioning/datasources/ds.yaml:ro
+      - ./_deploy/compose-config/grafana/dashboard_examples/logs_dashboard.json:/var/lib/grafana/dashboards/minerva/logs.json:ro
+      - ./_deploy/compose-config/grafana/dashboard_examples/default.yaml:/etc/grafana/provisioning/dashboards/default.yaml:ro
 
-  kibana:
-    image: kibana:8.12.2
-    environment:
-      - xpack.security.enabled=false
-      # - xpack.encryptedSavedObjects.encryptionKey=af8fa2847e6a9c7b72fe289e56f4a7cf
-      # - xpack.reporting.encryptionKey=553d903880d293a42f7c4370cbaf41e3
-      # - xpack.security.encryptionKey=f4dbc95c3037cdb7a7f983d713dbfe3a
-    links:
-      - elasticsearch
-    ports:
-      - 5601:5601
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-
-volumes:
-  elasticsearch:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './_deploy/compose-data/elasticsearch'
