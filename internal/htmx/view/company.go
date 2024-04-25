@@ -7,6 +7,7 @@ import (
 
 	service "github.com/Minerva-System/minerva-go/internal/htmx/service"
 	log "github.com/Minerva-System/minerva-go/pkg/log"
+	config "github.com/Minerva-System/minerva-go/internal/htmx/config"
 )
 
 type NewCompanyForm struct {
@@ -17,7 +18,7 @@ type NewCompanyForm struct {
 
 func CompanyIndexView(c *gin.Context) {
 	c.HTML(200, "company/main", gin.H{
-		"api_host": "http://localhost:5090",
+		"api_host": config.Values.FullHost,
 		"title":    "Companies",
 	})
 }

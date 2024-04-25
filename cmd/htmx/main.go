@@ -10,6 +10,7 @@ import (
 
 	log "github.com/Minerva-System/minerva-go/pkg/log"
 	view "github.com/Minerva-System/minerva-go/internal/htmx/view"
+	config "github.com/Minerva-System/minerva-go/internal/htmx/config"
 )
 
 func main() {
@@ -19,14 +20,14 @@ func main() {
 
 	log.Info("Minerva System: HTMX Server, Copyright (c) 2022-2024 Lucas S. Vieira")
 
-	host := ":5090"
+	config.Load()
 	
 	router := gin.New()
 	router.Use(sloggin.New(slog.Default()))
 	router.Use(gin.Recovery())
 	router.Use(cors.Default())
-
+	router.LoadHTMLGlob("templates/*/*.html")
 	view.InstallRoutes(router)
 
-	router.Run(host)
+	router.Run(config.Values.ServerHost)
 }

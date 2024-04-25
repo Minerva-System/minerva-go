@@ -7,9 +7,6 @@ import (
 )
 
 func InstallRoutes(router *gin.Engine) {
-	log.Info("Installing HTML templates")
-	router.LoadHTMLGlob("templates/*/*.html")
-
 	log.Info("Installing company")
 	router.GET("/", CompanyIndexView)
 	router.GET("/companies", CompanyTableLinesView)

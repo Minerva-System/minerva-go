@@ -7,18 +7,17 @@ import (
 	"strings"
 
 	log "github.com/Minerva-System/minerva-go/pkg/log"
+	config "github.com/Minerva-System/minerva-go/internal/htmx/config"
 )
 
 type Json map[string]interface{}
 
-const BASEURL = "http://100.83.101.113:30000/api/v1"
-
 func makeUrl(endpoint string) string {
-	return fmt.Sprintf("%s%s", BASEURL, endpoint)
+	return fmt.Sprintf("%s%s", config.Values.Backend, endpoint)
 }
 
 func makeUrlId(endpoint string, id string) string {
-	return fmt.Sprintf("%s%s/%s", BASEURL, endpoint, id)
+	return fmt.Sprintf("%s%s/%s", config.Values.Backend, endpoint, id)
 }
 
 func GetCompanies() (data []Json, err error) {
