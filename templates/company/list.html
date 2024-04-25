@@ -1,0 +1,20 @@
+{{ define "company/list" }}
+{{range $company := .}}
+<tr>
+  <th scope="row">{{$company.id}}</th>
+  <td>{{$company.slug}}</td>
+  <td>{{$company.companyName}}</td>
+  <td>{{$company.tradingName}}</td>
+  <td>{{$company.createdAt}}</td>
+  <td><{{$company.updatedAt}}</td>
+
+  <td>
+    <button
+	class="btn btn-danger"
+	hx-delete="{{.api_host}}/companies/{{$company.id}}"
+	hx-trigger="click"
+	hx-target="#companies-table">Delete</button>
+  </td>
+</tr>
+{{end}}
+{{end}}

@@ -1,0 +1,50 @@
+{{ define "company/main" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "common/head" . }}
+  </head>
+  <body>
+    {{template "common/navbar" .}}
+
+    <main class="center">
+      <h2>{{ .title }}</h2>
+      
+      <form hx-post="{{.api_host}}/companies/new"
+	    hx-target="#companies-table">
+	<div class="form-group">
+	  <label for="newCompanySlug">Slug:</label>
+	  <input class="form-control" type="text" name="slug" id="newCompanySlug" />
+	</div>
+	<div class="form-group">
+	  <label for="newCompanyName">Company Name:</label>
+	  <input class="form-control" type="text" name="companyName" id="newCompanyName" />
+	</div>
+	<div class="form-group">
+	  <label for="newCompanyTradingName">Trading Name:</label>
+	  <input class="form-control" type="text" name="tradingName" id="newCompanyTradingName" />
+	</div>
+	<button class="btn btn-primary" type="submit">Create</button>
+      </form>
+
+      <table class="table">
+	<thead>
+	  <th scope="col">UUID</th>
+	  <th scope="col">Slug</th>
+	  <th scope="col">Company Name</th>
+	  <th scope="col">Trading Name</th>
+	  <th scope="col">Created At</th>
+	  <th scope="col">Updated At</th>
+	</thead>
+	<tbody
+	    id="companies-table"
+	    hx-get="{{.api_host}}/companies"
+	    hx-trigger="load">
+	</tbody>
+      </table>
+
+    </main>
+    {{template "common/bootstrap" .}}
+  </body>
+</html>
+{{ end }}
