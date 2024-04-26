@@ -9,23 +9,41 @@
 
     <main class="center">
       <h2>{{ .title }}</h2>
-      
-      <form hx-post="{{.api_host}}/companies/new"
+
+      <div x-data="{ open: false }">
+	<button
+	    x-show="! open"
+	    @click="open = true"
+	    class="btn btn-secondary">
+	  New company...
+	</button>
+
+	<form
+	    x-show="open"
+	    x-data="{ slug: '', name: '', trading: '' }"
+	    @click.outside="open = false"
+	    hx-post="{{.api_host}}/companies/new"
 	    hx-target="#companies-table">
-	<div class="form-group">
-	  <label for="newCompanySlug">Slug:</label>
-	  <input class="form-control" type="text" name="slug" id="newCompanySlug" />
-	</div>
-	<div class="form-group">
-	  <label for="newCompanyName">Company Name:</label>
-	  <input class="form-control" type="text" name="companyName" id="newCompanyName" />
-	</div>
-	<div class="form-group">
-	  <label for="newCompanyTradingName">Trading Name:</label>
-	  <input class="form-control" type="text" name="tradingName" id="newCompanyTradingName" />
-	</div>
-	<button class="btn btn-primary" type="submit">Create</button>
-      </form>
+	  <div class="form-group">
+	    <label for="newCompanySlug">Slug:</label>
+	    <input class="form-control" type="text" name="slug" id="newCompanySlug" x-model="slug" />
+	  </div>
+	  <div class="form-group">
+	    <label for="newCompanyName">Company Name:</label>
+	    <input class="form-control" type="text" name="companyName" id="newCompanyName" x-model="name" />
+	  </div>
+	  <div class="form-group">
+	    <label for="newCompanyTradingName">Trading Name:</label>
+	    <input class="form-control" type="text" name="tradingName" id="newCompanyTradingName" x-model="trading" />
+	  </div>
+	  <button
+	      x-on:mouseup="open=false; setTimeout(() => { slug=''; name=''; trading='' }, .05)"
+	      class="btn btn-primary"
+	      type="submit">
+	    Create
+	  </button>
+	</form>
+      </div>
 
       <table class="table">
 	<thead>

@@ -67,3 +67,25 @@ func DeleteCompanyView(c *gin.Context) {
 	// Return company table items
 	CompanyTableLinesView(c)
 }
+
+func CompanyMenuView(c *gin.Context) {
+	companyId := c.Param("company")
+	// Get company name here
+	c.HTML(200, "company/menu", gin.H{
+		"api_host": config.Values.FullHost,
+		"title":    "Company Menu",
+		"company_id": companyId,
+	})
+}
+
+func CompanyDetailView(c *gin.Context) {
+	companyId := c.Param("company")
+	data, err := service.GetCompany(companyId)
+	if err != nil {
+		log.Error("Error retrieving company: %v", err)
+		c.AbortWithError(500, err)
+		return
+	}
+	
+	c.HTML(200, "company/detail", data)
+}

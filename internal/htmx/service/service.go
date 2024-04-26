@@ -16,12 +16,48 @@ func makeUrl(endpoint string) string {
 	return fmt.Sprintf("%s%s", config.Values.Backend, endpoint)
 }
 
+func makeUrlTenant(endpoint string, companyId string) string {
+	return fmt.Sprintf("%s/%s%s", config.Values.Backend, companyId, endpoint)
+}
+
 func makeUrlId(endpoint string, id string) string {
 	return fmt.Sprintf("%s%s/%s", config.Values.Backend, endpoint, id)
 }
 
+func makeUrlTenantId(endpoint string, companyId string, id string) string {
+	return fmt.Sprintf("%s/%s%s/%s", config.Values.Backend, companyId, endpoint, id)
+}
+
 func GetCompanies() (data []Json, err error) {
 	url := makeUrl("/companies")
+	log.Info("GET %s", url)
+	response, err := http.Get(url)
+	if err != nil {
+		log.Error("Error on request: %v", err)
+		return
+	}
+
+	err = json.NewDecoder(response.Body).Decode(&data)
+	defer response.Body.Close()
+	return
+}
+
+func GetUsers(companyId string) (data []Json, err error) {
+	url := makeUrlTenant("/users", companyId)
+	log.Info("GET %s", url)
+	response, err := http.Get(url)
+	if err != nil {
+		log.Error("Error on request: %v", err)
+		return
+	}
+
+	err = json.NewDecoder(response.Body).Decode(&data)
+	defer response.Body.Close()
+	return
+}
+
+func GetCompany(id string) (data Json, err error) {
+	url := makeUrlId("/companies", id)
 	log.Info("GET %s", url)
 	response, err := http.Get(url)
 	if err != nil {

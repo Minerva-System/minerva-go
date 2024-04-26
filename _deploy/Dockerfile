@@ -29,10 +29,10 @@ CMD ["sh", "-c", "exec atlas migrate apply --url \"maria://$DATABASE_SERVICE_USE
 
 # HTMX Server
 FROM builder as builder_htmx
-RUN make bin/htmxserver
+RUN make bin/htmx
 FROM runner AS minerva_go_htmx
 EXPOSE 5090
-COPY --from=builder_rest /minerva/bin/htmx ./minerva-htmx
+COPY --from=builder_htmx /minerva/bin/htmx ./minerva-htmx
 COPY ./templates ./templates
 CMD ["./minerva-htmx"]
 

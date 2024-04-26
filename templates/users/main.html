@@ -1,0 +1,35 @@
+{{ define "users/main" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "common/head" . }}
+  </head>
+  <body>
+    {{template "common/navbar" .}}
+
+    <main class="center">
+      <h2>
+	<a href="{{.api_host}}/{{.company_id}}/menu"><i class="fa-solid fa-arrow-left"></i></a> {{ .title }}
+      </h2>
+
+      <table class="table">
+	<thead>
+	  <th scope="col">UUID</th>
+	  <th scope="col">Login</th>
+	  <th scope="col">E-mail</th>
+	  <th scope="col">Name</th>
+	  <th scope="col">Created At</th>
+	  <th scope="col">Updated At</th>
+	</thead>
+	<tbody
+	    id="users-table"
+	    hx-get="{{.api_host}}/{{.company_id}}/users/list"
+	    hx-trigger="load">
+	</tbody>
+      </table>
+
+    </main>
+    {{template "common/bootstrap" .}}
+  </body>
+</html>
+{{ end }}

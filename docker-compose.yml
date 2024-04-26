@@ -1,5 +1,26 @@
 
 services:
+  htmx:
+    build:
+      context: .
+      dockerfile: _deploy/Dockerfile
+      target: minerva_go_htmx
+    environment:
+      - GIN_MODE=release
+      - MINERVA_LOG_LEVEL=debug
+      - MINERVA_HTMX_HOST=localhost
+      - MINERVA_HTMX_PORT=5090
+      - MINERVA_HTMX_BACKEND=http://rest:9000/api/v1
+      - MINERVA_HTMX_USE_SSL=false
+    ports:
+      - 5090:5090
+    depends_on:
+      rest:
+        condition: service_started
+    labels:
+      logging: "promtail"
+      logging_jobname: "htmx"
+
   rest:
     build:
       context: .

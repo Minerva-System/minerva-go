@@ -1,7 +1,11 @@
 {{ define "company/list" }}
 {{range $company := .}}
 <tr>
-  <th scope="row">{{$company.id}}</th>
+  <th scope="row">
+    <a href="{{.api_host}}/{{$company.id}}/menu">
+      {{$company.id}}
+    </a>
+  </th>
   <td>{{$company.slug}}</td>
   <td>{{$company.companyName}}</td>
   <td>{{$company.tradingName}}</td>
@@ -13,7 +17,7 @@
 	class="btn btn-danger"
 	hx-delete="{{.api_host}}/companies/{{$company.id}}"
 	hx-trigger="click"
-	hx-target="#companies-table">Delete</button>
+	hx-target="#companies-table">Disable</button>
   </td>
 </tr>
 {{end}}

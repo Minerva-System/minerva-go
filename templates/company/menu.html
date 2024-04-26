@@ -1,0 +1,36 @@
+{{ define "company/menu" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    {{ template "common/head" . }}
+
+    <style>
+     .center-group {
+	 position: absolute;
+	 left: 25%;
+	 right: 25%;
+	 margin: auto;
+     }
+    </style>
+  </head>
+  <body>
+    {{template "common/navbar" .}}
+
+    <main class="center" x-data="{ company_id: '{{ .company_id }}' }">
+      <h2>
+	<a href="{{.api_host}}/"><i class="fa-solid fa-arrow-left"></i></a> {{ .title }}
+      </h2>
+      <div class="center" hx-get="{{.api_host}}/{{.company_id}}/detail" hx-trigger="load"></div>
+      <br/>
+
+      <div class="btn-group-vertical center-group">
+      <a href="{{.api_host}}/{{.company_id}}/users" type="button" role="button" class="btn btn-primary">Users</a>
+      <button type="button" class="btn btn-primary">Products</button>
+      <button type="button" class="btn btn-primary">Reports</button>
+      </div>
+      
+    </main>
+    {{template "common/bootstrap" .}}
+  </body>
+</html>
+{{ end }}
